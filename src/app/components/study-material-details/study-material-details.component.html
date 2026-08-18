@@ -1,8 +1,46 @@
 <div *ngIf="material" class="lms-page-wrapper">
-  <div class="container-fluid px-3 px-md-4 py-4 max-width-container">
+  
+  <!-- Compact Mobile Top Header (< 768px) -->
+  <div class="mobile-details-header d-flex d-md-none align-items-center justify-content-between px-3 py-2.5 bg-white border-bottom sticky-top shadow-sm">
+    <button type="button" class="btn btn-light btn-icon-mobile border rounded-circle" (click)="backToList()" aria-label="Back to List">
+      <i class="bi bi-arrow-left fs-5"></i>
+    </button>
 
-    <!-- Header -->
-    <div class="lms-page-header">
+    <div class="text-center px-2 flex-grow-1 min-width-0">
+      <div class="fw-bold text-dark text-truncate fs-6">Study Material Details</div>
+      <div class="text-muted x-small text-truncate">{{ material.subjectCode }}</div>
+    </div>
+
+    <!-- Mobile Actions Dropdown -->
+    <div class="dropdown">
+      <button class="btn btn-light btn-icon-mobile border rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions Menu">
+        <i class="bi bi-three-dots-vertical fs-5"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 py-2 rounded-3">
+        <li *ngIf="material.fileName || material.externalLink">
+          <button class="dropdown-item py-2 fw-semibold" (click)="downloadResource()">
+            <i class="bi bi-download me-2 text-warning"></i> {{ material.externalLink ? 'Open Resource Link' : 'Download File' }}
+          </button>
+        </li>
+        <li>
+          <button class="dropdown-item py-2 fw-semibold" (click)="editMaterial()">
+            <i class="bi bi-pencil-square me-2 text-primary"></i> Edit Material
+          </button>
+        </li>
+        <li><hr class="dropdown-divider my-1"></li>
+        <li>
+          <button class="dropdown-item py-2 fw-semibold text-danger" (click)="confirmDelete()">
+            <i class="bi bi-trash3-fill me-2"></i> Delete Material
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid px-2 px-sm-3 px-md-4 py-3 py-md-4 max-width-container">
+
+    <!-- Desktop Header (>= 768px) -->
+    <div class="lms-page-header d-none d-md-flex align-items-center justify-content-between mb-4">
       <div>
         <div class="d-flex align-items-center gap-2 mb-1">
           <h1 class="page-title mb-0">Study Material Details</h1>
@@ -30,21 +68,25 @@
       </div>
     </div>
 
-    <div class="row g-4">
-      <!-- Main Content -->
+    <!-- Main Content Layout -->
+    <div class="row g-3 g-md-4">
+      
+      <!-- Main Column -->
       <div class="col-12 col-lg-8">
-        <div class="ref-content-card p-4 mb-4">
+        <div class="ref-content-card p-3 p-sm-4 mb-3 mb-md-4">
+          
           <!-- 1. Title & Topic Header -->
-          <div class="d-flex align-items-start justify-content-between pb-3 border-bottom mb-4">
-            <div>
-              <span class="text-muted x-small fw-bold text-uppercase d-block mb-1">MATERIAL TITLE</span>
-              <h3 class="fw-bold text-dark mb-1">{{ material.title }}</h3>
-              <div class="text-warning fw-bold small"><i class="bi bi-bookmark-star me-1"></i> Topic: {{ material.topic }}</div>
+          <div class="pb-3 border-bottom mb-3 mb-md-4">
+            <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+              <span class="text-muted x-small fw-bold text-uppercase">MATERIAL TITLE</span>
+              <span class="ref-code-badge d-inline-block d-md-none">{{ material.subjectCode }}</span>
             </div>
+            <h3 class="fw-bold text-dark mb-1 material-detail-title">{{ material.title }}</h3>
+            <div class="text-warning fw-bold small text-wrap"><i class="bi bi-bookmark-star me-1"></i> Topic: {{ material.topic }}</div>
           </div>
 
           <!-- 2. Badges & Metadata Row -->
-          <div class="row g-3 p-3 bg-light rounded-3 border mb-4">
+          <div class="row g-2 g-sm-3 p-2.5 p-sm-3 bg-light rounded-3 border mb-3 mb-md-4 align-items-center">
             <div class="col-6 col-sm-3">
               <span class="form-label-custom mb-1">STATUS</span>
               <span class="status-pill status-published" *ngIf="material.status === 'Published'">
@@ -57,90 +99,123 @@
 
             <div class="col-6 col-sm-3">
               <span class="form-label-custom mb-1">MATERIAL TYPE</span>
-              <span class="badge bg-light text-dark border px-2.5 py-1.5 small fw-bold">
+              <span class="badge bg-light text-dark border px-2.5 py-1.5 small fw-bold text-truncate d-inline-block max-w-100">
                 {{ material.materialType }}
               </span>
             </div>
 
             <div class="col-6 col-sm-3">
               <span class="form-label-custom mb-1">UPLOAD DATE</span>
-              <div class="fw-bold text-success small"><i class="bi bi-calendar-check me-1"></i> {{ material.publishDate }}</div>
+              <div class="fw-bold text-success small text-truncate"><i class="bi bi-calendar-check me-1"></i> {{ material.publishDate }}</div>
             </div>
 
             <div class="col-6 col-sm-3">
               <span class="form-label-custom mb-1">UPLOADED BY</span>
-              <div class="fw-bold text-dark small">👤 {{ material.uploadedBy }}</div>
+              <div class="fw-bold text-dark small text-truncate">👤 {{ material.uploadedBy }}</div>
             </div>
           </div>
 
           <!-- 3. Description Content -->
-          <div class="material-body mb-4">
+          <div class="material-body mb-3 mb-md-4">
             <h6 class="form-label-custom mb-2">DESCRIPTION & LEARNING OBJECTIVES</h6>
-            <div class="p-3.5 bg-white rounded-3 border text-secondary lh-lg mb-0 text-justify white-space-pre-line fs-6">
+            <div class="p-3 p-sm-3.5 bg-white rounded-3 border text-secondary lh-lg mb-0 text-justify white-space-pre-line fs-6 material-content-box">
               {{ material.description }}
             </div>
           </div>
 
           <!-- 4. Attached Document / Resource Link Card -->
-          <div *ngIf="material.fileName || material.externalLink" class="border-top pt-4">
+          <div *ngIf="material.fileName || material.externalLink" class="border-top pt-3 pt-md-4">
             <h6 class="form-label-custom mb-3">ATTACHED RESOURCE FILE / LINK</h6>
 
-            <div class="p-3 border rounded-3 bg-light d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-3">
-                <i class="bi bi-file-earmark-arrow-down-fill fs-1 text-warning"></i>
-                <div>
-                  <div class="fw-bold text-dark small">{{ material.fileName || material.title }}</div>
-                  <div class="text-muted x-small">{{ material.fileSize || 'External Online Resource' }} • {{ (material.fileType || material.materialType) | uppercase }}</div>
+            <div class="p-3 border rounded-3 bg-light d-flex align-items-center justify-content-between gap-2 resource-file-card">
+              <div class="d-flex align-items-center gap-2.5 min-width-0 overflow-hidden flex-grow-1">
+                <i class="bi bi-file-earmark-arrow-down-fill fs-1 text-warning flex-shrink-0"></i>
+                <div class="min-width-0 overflow-hidden">
+                  <div class="fw-bold text-dark small text-truncate" [title]="material.fileName || material.title">{{ material.fileName || material.title }}</div>
+                  <div class="text-muted x-small text-truncate">{{ material.fileSize || 'External Online Resource' }} • {{ (material.fileType || material.materialType) | uppercase }}</div>
                 </div>
               </div>
 
-              <button type="button" class="btn-amber-primary py-1.5 px-3 fs-7" (click)="downloadResource()">
+              <button type="button" class="btn-amber-primary py-2 px-3 fs-7 touch-target-btn flex-shrink-0" (click)="downloadResource()">
                 {{ material.externalLink ? 'Open Link 🔗' : 'Download File 📥' }}
               </button>
             </div>
           </div>
+
+          <!-- Mobile Action Bar (< 768px) -->
+          <div class="d-block d-md-none border-top pt-3 mt-3">
+            <div class="row g-2">
+              <div class="col-6">
+                <button type="button" class="btn btn-outline-secondary w-100 rounded-3 py-2.5 fw-semibold touch-target-btn" (click)="backToList()">
+                  <i class="bi bi-arrow-left me-1"></i> Back
+                </button>
+              </div>
+              <div class="col-6" *ngIf="material.fileName || material.externalLink">
+                <button type="button" class="btn btn-amber-primary w-100 rounded-3 py-2.5 fw-semibold touch-target-btn" (click)="downloadResource()">
+                  <i class="bi bi-download me-1"></i> {{ material.externalLink ? 'Open' : 'Download' }}
+                </button>
+              </div>
+              <div class="col-6">
+                <button type="button" class="btn btn-outline-primary w-100 rounded-3 py-2.5 fw-semibold touch-target-btn" (click)="editMaterial()">
+                  <i class="bi bi-pencil-square me-1"></i> Edit
+                </button>
+              </div>
+              <div class="col-6">
+                <button type="button" class="btn btn-outline-danger w-100 rounded-3 py-2.5 fw-semibold text-danger touch-target-btn" (click)="confirmDelete()">
+                  <i class="bi bi-trash3-fill me-1"></i> Delete
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      <!-- Scope Sidebar -->
+      <!-- Scope Sidebar Column -->
       <div class="col-12 col-lg-4">
-        <div class="ref-content-card p-4 mb-4">
-          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+        <div class="ref-content-card p-3 p-sm-4 mb-3 mb-md-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2 fs-6 fs-md-5">
             <i class="bi bi-building text-warning me-2"></i> Academic Target Scope
           </h5>
 
-          <div class="mb-3">
-            <label class="form-label-custom">DEPARTMENT</label>
-            <div class="fw-bold text-dark fs-6">{{ material.department }}</div>
+          <div class="row g-2">
+            <div class="col-6 col-lg-12 mb-2 mb-lg-3">
+              <label class="form-label-custom">DEPARTMENT</label>
+              <div class="fw-bold text-dark fs-6 text-wrap">{{ material.department }}</div>
+            </div>
+
+            <div class="col-6 col-lg-12 mb-2 mb-lg-3">
+              <label class="form-label-custom">COURSE / DEGREE</label>
+              <div class="fw-bold text-dark small text-wrap">{{ material.course }}</div>
+            </div>
+
+            <div class="col-6 col-lg-12 mb-2 mb-lg-3">
+              <label class="form-label-custom">YEAR & SEMESTER</label>
+              <div class="fw-bold text-dark small text-wrap">{{ material.year }} • {{ material.semester }}</div>
+            </div>
+
+            <div class="col-6 col-lg-12 mb-2 mb-lg-3">
+              <label class="form-label-custom">SECTION</label>
+              <div>
+                <span *ngIf="material.section" class="badge bg-light text-dark border px-2.5 py-1 small fw-semibold text-wrap">{{ material.section }}</span>
+                <span *ngIf="!material.section" class="text-muted small">All Sections / Not Specified</span>
+              </div>
+            </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label-custom">COURSE / DEGREE</label>
-            <div class="fw-bold text-dark small">{{ material.course }}</div>
-          </div>
+          <hr class="my-2.5 my-md-3" />
 
-          <div class="mb-3">
-            <label class="form-label-custom">YEAR & SEMESTER</label>
-            <div class="fw-bold text-dark small">{{ material.year }} • {{ material.semester }}</div>
-          </div>
+          <div class="row g-2">
+            <div class="col-6 col-lg-12 mb-2 mb-lg-3">
+              <label class="form-label-custom">SUBJECT & CODE</label>
+              <div class="fw-bold text-dark small text-wrap">{{ material.subject }}</div>
+              <div class="text-muted x-small">Code: {{ material.subjectCode }}</div>
+            </div>
 
-          <div class="mb-3">
-            <label class="form-label-custom">SECTION</label>
-            <span *ngIf="material.section" class="badge bg-light text-dark border px-2.5 py-1 small fw-semibold">{{ material.section }}</span>
-            <span *ngIf="!material.section" class="text-muted small">All Sections / Not Specified</span>
-          </div>
-
-          <hr class="my-3" />
-
-          <div class="mb-3">
-            <label class="form-label-custom">SUBJECT & CODE</label>
-            <div class="fw-bold text-dark small">{{ material.subject }}</div>
-            <div class="text-muted x-small">Code: {{ material.subjectCode }}</div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label-custom">ACADEMIC SESSION</label>
-            <div class="fw-bold text-success small"><i class="bi bi-calendar-check me-1"></i> {{ material.academicYear }}</div>
+            <div class="col-6 col-lg-12 mb-2 mb-lg-3">
+              <label class="form-label-custom">ACADEMIC SESSION</label>
+              <div class="fw-bold text-success small text-truncate"><i class="bi bi-calendar-check me-1"></i> {{ material.academicYear }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -148,16 +223,16 @@
 
     <!-- Delete Modal -->
     <div *ngIf="selectedMaterialToDelete" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
-      <div class="modal-dialog-sm bg-white rounded-4 shadow-lg p-4 text-center position-relative">
+      <div class="modal-dialog-sm bg-white rounded-4 shadow-lg p-3 p-sm-4 text-center position-relative">
         <div class="delete-icon-circle mx-auto mb-3">
           <i class="bi bi-exclamation-triangle-fill fs-2 text-danger"></i>
         </div>
         <h5 class="fw-bold text-dark mb-2">Delete Study Material?</h5>
-        <p class="text-muted small mb-4">Are you sure you want to delete <strong>"{{ material.title }}"</strong>?</p>
+        <p class="text-muted small mb-4">Are you sure you want to delete <strong class="text-break">"{{ material.title }}"</strong>?</p>
         
         <div class="d-flex justify-content-center gap-2">
-          <button type="button" class="btn btn-light px-4 border rounded-3 fw-semibold" (click)="cancelDelete()">Cancel</button>
-          <button type="button" class="btn btn-danger px-4 shadow-sm rounded-3 fw-bold" (click)="executeDelete()">Yes, Delete</button>
+          <button type="button" class="btn btn-light px-4 border rounded-3 fw-semibold touch-target-btn" (click)="cancelDelete()">Cancel</button>
+          <button type="button" class="btn btn-danger px-4 shadow-sm rounded-3 fw-bold touch-target-btn" (click)="executeDelete()">Yes, Delete</button>
         </div>
       </div>
     </div>
