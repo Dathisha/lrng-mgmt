@@ -71,6 +71,10 @@ export class CircularDetailsComponent implements OnInit {
     this.router.navigate(['/circulars']);
   }
 
+  printCircular(): void {
+    window.print();
+  }
+
   getPriorityBadgeClass(priority?: string): string {
     switch (priority) {
       case 'Urgent': return 'bg-danger text-white';
