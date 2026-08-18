@@ -1,15 +1,32 @@
 <div class="lms-page-wrapper">
-  <div class="container-fluid px-3 px-md-4 py-4 max-width-container">
+  
+  <!-- Compact Mobile Top Header (< 768px) -->
+  <div class="mobile-form-header d-flex d-md-none align-items-center justify-content-between px-3 py-2.5 bg-white border-bottom sticky-top shadow-sm">
+    <button type="button" class="btn btn-light btn-icon-mobile border rounded-circle" (click)="cancel()" aria-label="Back to Materials List">
+      <i class="bi bi-arrow-left fs-5"></i>
+    </button>
+
+    <div class="text-center px-2 flex-grow-1 min-width-0">
+      <div class="fw-bold text-dark text-truncate fs-6">{{ pageTitle }}</div>
+      <div class="text-muted x-small text-truncate">Study Material Management</div>
+    </div>
+
+    <button type="button" class="btn btn-amber-primary btn-sm rounded-3 px-3 py-1.5 fw-semibold touch-target-btn-sm" (click)="saveMaterial('Published')">
+      Save
+    </button>
+  </div>
+
+  <div class="container-fluid px-2 px-sm-3 px-md-4 py-3 py-md-4 max-width-container">
 
     <!-- Toast Notification -->
-    <div *ngIf="toastMessage" class="toast-notification fade show shadow-lg mb-4" role="alert">
+    <div *ngIf="toastMessage" class="toast-notification fade show shadow-lg mb-3 mb-md-4" role="alert">
       <i class="bi me-2 fs-5" [ngClass]="toastType === 'success' ? 'bi-check-circle-fill text-success' : 'bi-exclamation-triangle-fill text-danger'"></i>
       <span>{{ toastMessage }}</span>
       <button type="button" class="btn-close ms-auto" (click)="toastMessage = null"></button>
     </div>
 
-    <!-- Top Header -->
-    <div class="lms-page-header">
+    <!-- Desktop Top Header (>= 768px) -->
+    <div class="lms-page-header d-none d-md-flex align-items-center justify-content-between mb-4">
       <div>
         <h1 class="page-title">{{ pageTitle }}</h1>
         <p class="page-subtitle">Fill in study material details, attach document files or add external learning links</p>
@@ -21,13 +38,14 @@
       </div>
     </div>
 
-    <form [formGroup]="materialForm" class="row g-4">
+    <form [formGroup]="materialForm" class="row g-3 g-md-4">
+      
       <!-- Main Content Column -->
       <div class="col-12 col-lg-8">
 
         <!-- Section 1: General Material Information -->
-        <div class="ref-content-card p-4 mb-4">
-          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+        <div class="ref-content-card p-3 p-sm-4 mb-3 mb-md-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2 fs-6 fs-md-5">
             <i class="bi bi-journal-bookmark-fill text-warning me-2"></i> General Material Information
           </h5>
 
@@ -112,8 +130,8 @@
         </div>
 
         <!-- Section 2: File Upload & External Links -->
-        <div class="ref-content-card p-4 mb-4">
-          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+        <div class="ref-content-card p-3 p-sm-4 mb-3 mb-md-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2 fs-6 fs-md-5">
             <i class="bi bi-cloud-arrow-up-fill text-warning me-2"></i> File Upload & Resource Links
           </h5>
 
@@ -121,7 +139,7 @@
           <div class="mb-4">
             <label class="form-label-custom">ATTACHED DOCUMENT / FILE</label>
 
-            <div class="upload-dropzone border border-2 border-dashed rounded-4 p-4 text-center bg-light mb-3 position-relative">
+            <div class="upload-dropzone border border-2 border-dashed rounded-4 p-3 p-sm-4 text-center bg-light mb-3 position-relative">
               <input
                 type="file"
                 id="fileUpload"
@@ -131,21 +149,21 @@
               />
               <label for="fileUpload" class="cursor-pointer mb-0 w-100">
                 <i class="bi bi-cloud-arrow-up-fill fs-1 text-warning mb-1 d-block"></i>
-                <div class="fw-bold text-dark">Click to browse or drag document file here</div>
+                <div class="fw-bold text-dark fs-6">Click to browse or drag document file here</div>
                 <div class="text-muted small">Supports PDF, DOC, PPT, XLS, ZIP, PNG, JPG (Max 50MB)</div>
               </label>
             </div>
 
             <!-- Uploaded File Card Details -->
-            <div *ngIf="uploadedFileName" class="p-3 border rounded-3 bg-white d-flex align-items-center justify-content-between shadow-xs">
-              <div class="d-flex align-items-center gap-3">
-                <span class="badge bg-amber-soft text-amber text-uppercase px-2.5 py-1 small fw-bold">{{ uploadedFileType }}</span>
-                <div>
-                  <div class="fw-bold text-dark small">{{ uploadedFileName }}</div>
-                  <div class="text-muted x-small">{{ uploadedFileSize }}</div>
+            <div *ngIf="uploadedFileName" class="p-2.5 p-sm-3 border rounded-3 bg-white d-flex align-items-center justify-content-between flex-wrap gap-2 shadow-xs">
+              <div class="d-flex align-items-center gap-2.5 min-width-0 overflow-hidden flex-grow-1">
+                <span class="badge bg-amber-soft text-amber text-uppercase px-2.5 py-1 small fw-bold flex-shrink-0">{{ uploadedFileType }}</span>
+                <div class="min-width-0 overflow-hidden">
+                  <div class="fw-bold text-dark small text-truncate" [title]="uploadedFileName">{{ uploadedFileName }}</div>
+                  <div class="text-muted x-small text-truncate">{{ uploadedFileSize }}</div>
                 </div>
               </div>
-              <button type="button" class="btn btn-sm btn-outline-danger border-0 fw-bold" (click)="removeFile()">
+              <button type="button" class="btn btn-sm btn-outline-danger border-0 fw-bold flex-shrink-0 touch-target-btn-sm" (click)="removeFile()">
                 <i class="bi bi-x-circle-fill me-1"></i> Remove
               </button>
             </div>
@@ -158,7 +176,7 @@
               <i class="bi bi-link-45deg ref-search-icon fs-5"></i>
               <input
                 type="url"
-                class="form-control ref-search-input w-100 ps-5"
+                class="form-control ref-search-input w-100 ps-5 custom-input"
                 placeholder="https://youtube.com/watch?v=... or https://ieee.org/paper/..."
                 formControlName="externalLink"
               />
@@ -172,80 +190,88 @@
       <!-- Right Column: Academic Scope & Publish Settings -->
       <div class="col-12 col-lg-4">
 
-        <!-- Academic Target Scope -->
-        <div class="ref-content-card p-4 mb-4">
-          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
-            <i class="bi bi-building text-warning me-2"></i> Academic Target Scope
+        <!-- Academic Target Scope & Publish Settings -->
+        <div class="ref-content-card p-3 p-sm-4 mb-3 mb-md-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2 fs-6 fs-md-5">
+            <i class="bi bi-building text-warning me-2"></i> Academic Scope & Settings
           </h5>
 
-          <!-- Department -->
-          <div class="mb-3">
-            <label class="form-label-custom">DEPARTMENT *</label>
-            <select class="form-select custom-select" formControlName="department">
-              <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
-            </select>
-          </div>
+          <div class="row g-3">
+            <!-- Department -->
+            <div class="col-12 col-sm-6 col-lg-12">
+              <label class="form-label-custom">DEPARTMENT *</label>
+              <select class="form-select custom-select" formControlName="department">
+                <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+              </select>
+            </div>
 
-          <!-- Course -->
-          <div class="mb-3">
-            <label class="form-label-custom">COURSE / DEGREE *</label>
-            <select class="form-select custom-select" formControlName="course">
-              <option *ngFor="let crs of courses" [value]="crs">{{ crs }}</option>
-            </select>
-          </div>
+            <!-- Course -->
+            <div class="col-12 col-sm-6 col-lg-12">
+              <label class="form-label-custom">COURSE / DEGREE *</label>
+              <select class="form-select custom-select" formControlName="course">
+                <option *ngFor="let crs of courses" [value]="crs">{{ crs }}</option>
+              </select>
+            </div>
 
-          <!-- Year -->
-          <div class="mb-3">
-            <label class="form-label-custom">YEAR LEVEL *</label>
-            <select class="form-select custom-select" formControlName="year">
-              <option *ngFor="let yr of years" [value]="yr">{{ yr }}</option>
-            </select>
-          </div>
+            <!-- Year -->
+            <div class="col-12 col-sm-6 col-lg-12">
+              <label class="form-label-custom">YEAR LEVEL *</label>
+              <select class="form-select custom-select" formControlName="year">
+                <option *ngFor="let yr of years" [value]="yr">{{ yr }}</option>
+              </select>
+            </div>
 
-          <!-- Semester -->
-          <div class="mb-3">
-            <label class="form-label-custom">SEMESTER *</label>
-            <select class="form-select custom-select" formControlName="semester">
-              <option *ngFor="let sem of semesters" [value]="sem">{{ sem }}</option>
-            </select>
-          </div>
+            <!-- Semester -->
+            <div class="col-12 col-sm-6 col-lg-12">
+              <label class="form-label-custom">SEMESTER *</label>
+              <select class="form-select custom-select" formControlName="semester">
+                <option *ngFor="let sem of semesters" [value]="sem">{{ sem }}</option>
+              </select>
+            </div>
 
-          <!-- Section -->
-          <div class="mb-3">
-            <label class="form-label-custom">SECTION <span class="text-muted x-small">(Optional)</span></label>
-            <select class="form-select custom-select" formControlName="section">
-              <option value="">Select Section (Optional)</option>
-              <option *ngFor="let sec of sections" [value]="sec">{{ sec }}</option>
-            </select>
-          </div>
+            <!-- Section -->
+            <div class="col-12 col-sm-6 col-lg-12">
+              <label class="form-label-custom">SECTION <span class="text-muted x-small">(Optional)</span></label>
+              <select class="form-select custom-select" formControlName="section">
+                <option value="">Select Section (Optional)</option>
+                <option *ngFor="let sec of sections" [value]="sec">{{ sec }}</option>
+              </select>
+            </div>
 
-          <!-- Academic Year -->
-          <div class="mb-3">
-            <label class="form-label-custom">ACADEMIC SESSION *</label>
-            <select class="form-select custom-select" formControlName="academicYear">
-              <option *ngFor="let ay of academicYears" [value]="ay">{{ ay }}</option>
-            </select>
-          </div>
+            <!-- Academic Year -->
+            <div class="col-12 col-sm-6 col-lg-12">
+              <label class="form-label-custom">ACADEMIC SESSION *</label>
+              <select class="form-select custom-select" formControlName="academicYear">
+                <option *ngFor="let ay of academicYears" [value]="ay">{{ ay }}</option>
+              </select>
+            </div>
 
-          <!-- Publish Date -->
-          <div class="mb-4">
-            <label class="form-label-custom">PUBLISH DATE *</label>
-            <input type="date" class="form-control custom-input" formControlName="publishDate" />
+            <!-- Faculty / Uploaded By -->
+            <div class="col-12 col-sm-6 col-lg-12">
+              <label class="form-label-custom">UPLOADED BY (FACULTY) *</label>
+              <input type="text" class="form-control custom-input" formControlName="uploadedBy" placeholder="Faculty Name" />
+            </div>
+
+            <!-- Publish Date -->
+            <div class="col-12 col-sm-6 col-lg-12">
+              <label class="form-label-custom">PUBLISH DATE *</label>
+              <input type="date" class="form-control custom-input" formControlName="publishDate" />
+            </div>
           </div>
 
           <!-- Action Buttons -->
-          <div class="d-grid gap-2 pt-2 border-top">
+          <div class="d-grid gap-2 pt-3 mt-3 border-top">
             <button
               type="button"
-              class="btn-amber-primary w-100 justify-content-center py-2.5"
+              class="btn-amber-primary w-100 justify-content-center py-2.5 touch-target-btn"
               (click)="saveMaterial('Published')"
             >
-              <i class="bi bi-send-fill"></i> {{ isEditMode ? 'Update & Publish' : 'Upload & Publish' }}
+              <i class="bi bi-send-fill me-1"></i> {{ isEditMode ? 'Update & Publish' : 'Upload & Publish' }}
             </button>
 
             <button
               type="button"
-              class="btn btn-outline-secondary py-2.5 fw-bold rounded-3"
+              class="btn btn-outline-secondary py-2.5 fw-bold rounded-3 touch-target-btn"
               (click)="saveMaterial('Draft')"
             >
               <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Save as Draft
@@ -253,13 +279,13 @@
 
             <button
               type="button"
-              class="btn btn-light py-2 text-muted fw-semibold"
+              class="btn btn-light py-2 text-muted fw-semibold touch-target-btn"
               (click)="resetForm()"
             >
               Reset Form
             </button>
 
-            <button type="button" class="btn btn-link text-muted py-1 x-small text-decoration-none fw-semibold" (click)="cancel()">
+            <button type="button" class="btn btn-link text-muted py-2 x-small text-decoration-none fw-semibold touch-target-btn" (click)="cancel()">
               Cancel
             </button>
           </div>
