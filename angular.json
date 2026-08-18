@@ -22,7 +22,8 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/404.html"
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
@@ -34,12 +35,41 @@
               }
             },
             "scripts": []
-          }
+          },
+          "configurations": {
+            "production": {
+              "baseHref": "/lrng-mgmt/",
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "buildTarget": "lms-management-system:build"
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "lms-management-system:build:production"
+            },
+            "development": {
+              "buildTarget": "lms-management-system:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {
+            "buildTarget": "lms-management-system:build:production",
+            "baseHref": "/lrng-mgmt/",
+            "dir": "dist/lms-management-system/browser"
           }
         }
       }

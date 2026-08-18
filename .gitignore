@@ -1,0 +1,18 @@
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/.angular
+
+# Node modules
+/node_modules
+
+# IDE / Editor files
+/.idea
+/.vscode
+*.swp
+*.swo
+
+# System files
+.DS_Store
+Thumbs.db
