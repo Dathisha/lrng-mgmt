@@ -1,8 +1,25 @@
 <div class="lms-page-wrapper">
-  <div class="container-fluid px-3 px-md-4 py-4 max-width-container">
+  
+  <!-- Mobile Top Header (< 768px) -->
+  <div class="mobile-form-header d-flex d-md-none align-items-center justify-content-between px-3 py-2.5 bg-white border-bottom sticky-top shadow-sm">
+    <button type="button" class="btn btn-light btn-icon-mobile border rounded-circle" (click)="cancel()" aria-label="Back to List">
+      <i class="bi bi-arrow-left fs-5"></i>
+    </button>
+
+    <div class="text-center px-2 flex-grow-1 min-width-0">
+      <div class="fw-bold text-dark text-truncate fs-6">{{ pageTitle }}</div>
+      <div class="text-muted x-small text-truncate">Faculty Circular Portal</div>
+    </div>
+
+    <button type="button" class="btn btn-amber-primary btn-sm rounded-3 px-3 py-1.5 fw-semibold touch-target-btn-sm" (click)="saveCircular('Published')">
+      Save
+    </button>
+  </div>
+
+  <div class="container-fluid px-2 px-sm-3 px-md-4 py-3 py-md-4 max-width-container">
     
-    <!-- Top Header -->
-    <div class="lms-page-header">
+    <!-- Desktop Page Header (>= 768px) -->
+    <div class="lms-page-header d-none d-md-flex align-items-center justify-content-between mb-4">
       <div>
         <h1 class="page-title">{{ pageTitle }}</h1>
         <p class="page-subtitle">Fill in circular details, attach official files, and choose to publish or save as draft</p>
@@ -14,12 +31,14 @@
       </div>
     </div>
 
-    <form [formGroup]="circularForm" class="row g-4">
+    <form [formGroup]="circularForm" class="row g-3 g-md-4">
+      
       <!-- Main Details Column -->
       <div class="col-12 col-lg-8">
+        
         <!-- General Information -->
-        <div class="ref-content-card p-4 mb-4">
-          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+        <div class="ref-content-card p-3 p-sm-4 mb-3 mb-md-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2 fs-6 fs-md-5">
             <i class="bi bi-info-circle-fill text-warning me-2"></i> General Information
           </h5>
 
@@ -70,8 +89,8 @@
         </div>
 
         <!-- Academic Scope & Target -->
-        <div class="ref-content-card p-4 mb-4">
-          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+        <div class="ref-content-card p-3 p-sm-4 mb-3 mb-md-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2 fs-6 fs-md-5">
             <i class="bi bi-building text-warning me-2"></i> Academic Scope & Target
           </h5>
 
@@ -109,16 +128,16 @@
             <!-- Target Audience Scope -->
             <div class="col-12">
               <label class="form-label-custom">TARGET AUDIENCE SCOPE *</label>
-              <div class="d-flex flex-wrap gap-3">
-                <div *ngFor="let aud of audiences" class="form-check custom-radio-box border rounded-3 p-3 flex-fill bg-light">
+              <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-3">
+                <div *ngFor="let aud of audiences" class="form-check custom-radio-box border rounded-3 p-2.5 p-sm-3 flex-fill bg-light m-0">
                   <input
-                    class="form-check-input ms-0 me-2"
+                    class="form-check-input ms-0 me-2 cursor-pointer"
                     type="radio"
                     [id]="'aud_' + aud"
                     [value]="aud"
                     formControlName="audience"
                   />
-                  <label class="form-check-label fw-bold text-dark cursor-pointer" [for]="'aud_' + aud">
+                  <label class="form-check-label fw-bold text-dark cursor-pointer small" [for]="'aud_' + aud">
                     {{ aud }}
                   </label>
                 </div>
@@ -128,28 +147,28 @@
         </div>
 
         <!-- Attachment Upload Dropzone -->
-        <div class="ref-content-card p-4 mb-4">
-          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+        <div class="ref-content-card p-3 p-sm-4 mb-3 mb-md-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2 fs-6 fs-md-5">
             <i class="bi bi-paperclip text-warning me-2"></i> Document Attachments
           </h5>
 
-          <div class="upload-dropzone border border-2 border-dashed rounded-4 p-4 text-center bg-light mb-3">
+          <div class="upload-dropzone border border-2 border-dashed rounded-4 p-3 p-sm-4 text-center bg-light mb-3">
             <input type="file" id="fileUpload" class="d-none" multiple (change)="onFileSelected($event)" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
             <label for="fileUpload" class="cursor-pointer mb-0 w-100">
               <i class="bi bi-cloud-arrow-up-fill fs-1 text-warning mb-2 d-block"></i>
-              <div class="fw-bold text-dark">Click to browse or drop document attachments here</div>
+              <div class="fw-bold text-dark fs-6">Click to browse or drop document attachments here</div>
               <div class="text-muted small">Supports PDF, DOCX, PNG, JPG</div>
             </label>
           </div>
 
           <div *ngIf="attachments.length > 0" class="list-group list-group-flush rounded-3 border">
-            <div *ngFor="let item of attachments; let i = index" class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-amber-soft text-amber px-2 py-1 small fw-bold text-uppercase">{{ item.type }}</span>
-                <span class="fw-semibold text-dark small">{{ item.name }}</span>
-                <span class="text-muted x-small">({{ item.size }})</span>
+            <div *ngFor="let item of attachments; let i = index" class="list-group-item d-flex justify-content-between align-items-center py-2.5 px-3 flex-wrap gap-2">
+              <div class="d-flex align-items-center gap-2 min-width-0 overflow-hidden flex-grow-1">
+                <span class="badge bg-amber-soft text-amber px-2 py-1 small fw-bold text-uppercase flex-shrink-0">{{ item.type }}</span>
+                <span class="fw-semibold text-dark small text-truncate" [title]="item.name">{{ item.name }}</span>
+                <span class="text-muted x-small flex-shrink-0">({{ item.size }})</span>
               </div>
-              <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" (click)="removeAttachment(i)">
+              <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold flex-shrink-0" (click)="removeAttachment(i)">
                 Remove
               </button>
             </div>
@@ -159,46 +178,57 @@
 
       <!-- Sidebar Settings Column -->
       <div class="col-12 col-lg-4">
-        <div class="ref-content-card p-4 mb-4">
-          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+        <div class="ref-content-card p-3 p-sm-4 mb-3 mb-md-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2 fs-6 fs-md-5">
             <i class="bi bi-sliders text-warning me-2"></i> Publish Settings
           </h5>
 
-          <!-- Publish Date -->
-          <div class="mb-4">
-            <label class="form-label-custom">PUBLISH DATE *</label>
-            <input
-              type="date"
-              class="form-control custom-input"
-              [ngClass]="{ 'is-invalid': submitted && f['publishDate'].errors }"
-              formControlName="publishDate"
-            />
+          <div class="row g-3 mb-4">
+            <!-- Publish Date -->
+            <div class="col-12 col-sm-6 col-lg-12">
+              <label class="form-label-custom">PUBLISH DATE *</label>
+              <input
+                type="date"
+                class="form-control custom-input"
+                [ngClass]="{ 'is-invalid': submitted && f['publishDate'].errors }"
+                formControlName="publishDate"
+              />
+            </div>
+
+            <!-- Priority -->
+            <div class="col-12 col-sm-6 col-lg-12">
+              <label class="form-label-custom">PRIORITY *</label>
+              <select class="form-select custom-select" formControlName="priority">
+                <option *ngFor="let prio of priorities" [value]="prio">{{ prio }}</option>
+              </select>
+            </div>
           </div>
 
           <!-- Actions -->
           <div class="d-grid gap-2 pt-2 border-top">
             <button
               type="button"
-              class="btn-amber-primary w-100 justify-content-center py-2.5"
+              class="btn-amber-primary w-100 justify-content-center py-2.5 touch-target-btn"
               (click)="saveCircular('Published')"
             >
-              <i class="bi bi-send-fill"></i> {{ isEditMode ? 'Update & Publish' : 'Publish Circular' }}
+              <i class="bi bi-send-fill me-1"></i> {{ isEditMode ? 'Update & Publish' : 'Publish Circular' }}
             </button>
 
             <button
               type="button"
-              class="btn btn-outline-secondary py-2.5 fw-bold rounded-3"
+              class="btn btn-outline-secondary py-2.5 fw-bold rounded-3 touch-target-btn"
               (click)="saveCircular('Draft')"
             >
               <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Save as Draft
             </button>
 
-            <button type="button" class="btn btn-light py-2 text-muted fw-semibold" (click)="cancel()">
+            <button type="button" class="btn btn-light py-2 text-muted fw-semibold touch-target-btn" (click)="cancel()">
               Cancel
             </button>
           </div>
         </div>
       </div>
+
     </form>
   </div>
 </div>
