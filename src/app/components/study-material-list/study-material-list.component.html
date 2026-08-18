@@ -1,0 +1,297 @@
+<div class="lms-page-wrapper">
+  <div class="container-fluid px-3 px-md-4 py-4 max-width-container">
+
+    <!-- Toast Notification -->
+    <div *ngIf="toastMessage" class="toast-notification fade show shadow-lg mb-4" role="alert">
+      <i class="bi me-2 fs-5" [ngClass]="toastType === 'danger' ? 'bi-exclamation-triangle-fill text-danger' : 'bi-check-circle-fill text-success'"></i>
+      <span>{{ toastMessage }}</span>
+      <button type="button" class="btn-close ms-auto" (click)="toastMessage = null"></button>
+    </div>
+
+    <!-- Top Header matching Reference Image -->
+    <div class="lms-page-header">
+      <div>
+        <h1 class="page-title">Faculty Study Materials Master</h1>
+        <p class="page-subtitle">Upload, organize and publish lecture notes, slides, video tutorials, and reference documentation</p>
+      </div>
+      <div>
+        <button class="btn-amber-primary" (click)="createNew()">
+          <i class="bi bi-cloud-arrow-up-fill fs-6"></i> Upload Study Material
+        </button>
+      </div>
+    </div>
+
+    <!-- 5 Reference Image Stat Cards Row -->
+    <div class="row g-3 mb-4">
+      <!-- Total Materials -->
+      <div class="col-12 col-sm-6 col-lg-2-4">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle yellow"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-folder-fill text-warning"></i> TOTAL MATERIALS
+          </div>
+          <div class="ref-stat-value">{{ stats.totalMaterials }}</div>
+          <span class="ref-stat-badge yellow">
+            <i class="bi bi-book me-1"></i> Course Library
+          </span>
+        </div>
+      </div>
+
+      <!-- Published -->
+      <div class="col-12 col-sm-6 col-lg-2-4">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle green"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-check-circle-fill text-success"></i> PUBLISHED
+          </div>
+          <div class="ref-stat-value">{{ stats.published }}</div>
+          <span class="ref-stat-badge green">
+            <i class="bi bi-broadcast me-1"></i> Live to Students
+          </span>
+        </div>
+      </div>
+
+      <!-- Drafts -->
+      <div class="col-12 col-sm-6 col-lg-2-4">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle purple"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-file-earmark-text-fill text-purple"></i> DRAFTS
+          </div>
+          <div class="ref-stat-value">{{ stats.drafts }}</div>
+          <span class="ref-stat-badge purple">
+            <i class="bi bi-pencil-square me-1"></i> In Preparation
+          </span>
+        </div>
+      </div>
+
+      <!-- PDFs -->
+      <div class="col-12 col-sm-6 col-lg-2-4">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle blue"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-file-earmark-pdf-fill text-primary"></i> PDF DOCUMENTS
+          </div>
+          <div class="ref-stat-value">{{ stats.pdfCount }}</div>
+          <span class="ref-stat-badge blue">
+            <i class="bi bi-download me-1"></i> Downloadable Notes
+          </span>
+        </div>
+      </div>
+
+      <!-- Videos / Links -->
+      <div class="col-12 col-sm-6 col-lg-2-4">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle pink"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-play-btn-fill text-danger"></i> VIDEOS & LINKS
+          </div>
+          <div class="ref-stat-value">{{ stats.videoLinkCount }}</div>
+          <span class="ref-stat-badge yellow" style="background-color: #fce7f3; color: #be185d;">
+            <i class="bi bi-link-45deg me-1"></i> Online Learning
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search & Filter Controls Card Container -->
+    <div class="card shadow-sm border-0 rounded-4 p-4 mb-4 filter-card">
+      <div class="row g-3 align-items-end">
+        <!-- Search Bar -->
+        <div class="col-12 col-md-4">
+          <label class="form-label-custom">SEARCH STUDY MATERIALS</label>
+          <div class="ref-search-wrapper w-100">
+            <i class="bi bi-search ref-search-icon"></i>
+            <input type="text" class="form-control ref-search-input w-100" placeholder="Search title, subject, topic, or file..." [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" />
+          </div>
+        </div>
+
+        <!-- Department -->
+        <div class="col-12 col-sm-6 col-md-2.5">
+          <label class="form-label-custom">DEPARTMENT</label>
+          <select class="form-select custom-select" [(ngModel)]="filterDepartment" (change)="applyFilters()">
+            <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+          </select>
+        </div>
+
+        <!-- Course -->
+        <div class="col-12 col-sm-6 col-md-2.5">
+          <label class="form-label-custom">COURSE</label>
+          <select class="form-select custom-select" [(ngModel)]="filterCourse" (change)="applyFilters()">
+            <option *ngFor="let crs of courses" [value]="crs">{{ crs }}</option>
+          </select>
+        </div>
+
+        <!-- Semester -->
+        <div class="col-12 col-sm-6 col-md-1.5">
+          <label class="form-label-custom">SEMESTER</label>
+          <select class="form-select custom-select" [(ngModel)]="filterSemester" (change)="applyFilters()">
+            <option *ngFor="let sem of semesters" [value]="sem">{{ sem }}</option>
+          </select>
+        </div>
+
+        <!-- Subject -->
+        <div class="col-12 col-sm-6 col-md-3">
+          <label class="form-label-custom">SUBJECT</label>
+          <select class="form-select custom-select" [(ngModel)]="filterSubject" (change)="applyFilters()">
+            <option *ngFor="let sb of subjects" [value]="sb">{{ sb }}</option>
+          </select>
+        </div>
+
+        <!-- Material Type -->
+        <div class="col-12 col-sm-6 col-md-2.5">
+          <label class="form-label-custom">MATERIAL TYPE</label>
+          <select class="form-select custom-select" [(ngModel)]="filterMaterialType" (change)="applyFilters()">
+            <option *ngFor="let type of materialTypes" [value]="type">{{ type }}</option>
+          </select>
+        </div>
+
+        <!-- Status -->
+        <div class="col-12 col-sm-6 col-md-2.5">
+          <label class="form-label-custom">STATUS</label>
+          <select class="form-select custom-select" [(ngModel)]="filterStatus" (change)="applyFilters()">
+            <option *ngFor="let st of statuses" [value]="st">{{ st }}</option>
+          </select>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="col-12 col-md-4 d-flex gap-2">
+          <button class="btn-amber-primary py-2 px-4 flex-fill justify-content-center" (click)="applyFilters()">Search</button>
+          <button class="btn btn-outline-secondary py-2 px-3 flex-fill rounded-3 fw-semibold" (click)="clearFilters()">Reset Filters</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Data Table Container matching Reference Image -->
+    <div class="ref-content-card">
+      <div class="ref-content-header">
+        <h5 class="ref-content-title">
+          <i class="bi bi-folder-symlink-fill text-warning"></i> Study Material Resources
+        </h5>
+        <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill fw-semibold">
+          Showing {{ filteredMaterials.length }} of {{ materials.length }} materials
+        </span>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="filteredMaterials.length === 0" class="text-center py-5">
+        <div class="mb-3 text-muted">
+          <i class="bi bi-folder-x fs-1 opacity-50"></i>
+        </div>
+        <p class="text-muted fw-bold mb-2">No study materials match your search parameters</p>
+        <button class="btn-amber-primary" (click)="createNew()">Upload Study Material</button>
+      </div>
+
+      <!-- Data Table with Dark Navy Header -->
+      <div *ngIf="filteredMaterials.length > 0" class="table-responsive">
+        <table class="table ref-table align-middle">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 28%;">MATERIAL TITLE & TOPIC</th>
+              <th scope="col">SUBJECT & CODE</th>
+              <th scope="col">COURSE & SEMESTER</th>
+              <th scope="col">TYPE</th>
+              <th scope="col">FILE / LINK</th>
+              <th scope="col">UPLOAD DATE</th>
+              <th scope="col">STATUS</th>
+              <th scope="col" class="text-end">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filteredMaterials" class="cursor-pointer" (click)="viewDetails(item)">
+              <!-- Material Title & Topic -->
+              <td>
+                <div class="d-flex align-items-start gap-2.5">
+                  <span class="fs-4 me-1">{{ getTypeIcon(item.materialType) }}</span>
+                  <div>
+                    <div class="fw-bold text-dark assignment-title-text text-truncate" style="max-width: 260px;" [title]="item.title">{{ item.title }}</div>
+                    <div class="text-muted x-small text-truncate" style="max-width: 260px;">{{ item.topic }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Subject & Code -->
+              <td>
+                <div class="fw-bold text-dark small">{{ item.subject }}</div>
+                <span class="ref-code-badge">{{ item.subjectCode }}</span>
+              </td>
+
+              <!-- Course & Semester -->
+              <td>
+                <div class="fw-bold text-dark small">{{ item.course }}</div>
+                <div class="text-muted x-small">{{ item.semester }}<span *ngIf="item.section"> • {{ item.section }}</span></div>
+              </td>
+
+              <!-- Material Type Badge -->
+              <td>
+                <span class="badge bg-light text-dark border px-2.5 py-1 small fw-semibold">
+                  {{ item.materialType }}
+                </span>
+              </td>
+
+              <!-- File / Link Info -->
+              <td>
+                <div *ngIf="item.fileName" class="x-small fw-bold text-dark text-truncate" style="max-width: 140px;" [title]="item.fileName">
+                  📁 {{ item.fileName }}
+                  <div class="text-muted x-small">{{ item.fileSize }}</div>
+                </div>
+                <div *ngIf="item.externalLink" class="x-small text-primary fw-bold">
+                  🔗 External Link
+                </div>
+              </td>
+
+              <!-- Uploaded Date & Uploader -->
+              <td>
+                <div class="small text-dark fw-semibold"><i class="bi bi-calendar-event me-1 text-warning"></i> {{ item.publishDate }}</div>
+                <div class="text-muted x-small">By {{ item.uploadedBy }}</div>
+              </td>
+
+              <!-- Status Badge -->
+              <td>
+                <span class="status-pill" [ngClass]="item.status === 'Published' ? 'status-published' : 'status-draft'">
+                  <span class="status-dot"></span> {{ item.status }}
+                </span>
+              </td>
+
+              <!-- Actions matching Reference Image Soft Buttons -->
+              <td class="text-end" (click)="$event.stopPropagation()">
+                <div class="d-inline-flex gap-1">
+                  <button type="button" class="btn-pill-view" title="View Details" (click)="viewDetails(item)">
+                    <i class="bi bi-eye-fill"></i> View
+                  </button>
+                  <button type="button" class="btn-pill-publish" title="Download Resource" (click)="downloadMaterial(item, $event)">
+                    <i class="bi bi-download"></i> Download
+                  </button>
+                  <button type="button" class="btn-pill-edit" title="Edit" (click)="editMaterial(item.id, $event)">
+                    <i class="bi bi-pencil-square"></i> Edit
+                  </button>
+                  <button type="button" class="btn-pill-delete" title="Delete" (click)="confirmDelete(item, $event)">
+                    <i class="bi bi-trash3-fill"></i> Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DELETE CONFIRMATION MODAL -->
+    <div *ngIf="selectedMaterialToDelete" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+      <div class="modal-dialog-sm bg-white rounded-4 shadow-lg p-4 text-center position-relative">
+        <div class="delete-icon-circle mx-auto mb-3">
+          <i class="bi bi-exclamation-triangle-fill fs-2 text-danger"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-2">Delete Study Material?</h5>
+        <p class="text-muted small mb-2">Are you sure you want to delete <strong>"{{ selectedMaterialToDelete.title }}"</strong>?</p>
+        <p class="text-danger x-small mb-4">Subject: {{ selectedMaterialToDelete.subject }} ({{ selectedMaterialToDelete.subjectCode }}) • This action cannot be undone.</p>
+        
+        <div class="d-flex justify-content-center gap-2">
+          <button type="button" class="btn btn-light px-4 border rounded-3 fw-semibold" (click)="cancelDelete()">Cancel</button>
+          <button type="button" class="btn btn-danger px-4 shadow-sm rounded-3 fw-bold" (click)="executeDelete()">Yes, Delete</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,182 @@
+<div *ngIf="circular" class="lms-page-wrapper">
+  <div class="container-fluid px-3 px-md-4 py-4 max-width-container">
+    
+    <!-- Toast Notification -->
+    <div *ngIf="toastMessage" class="toast-notification fade show shadow-lg mb-4" role="alert">
+      <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
+      <span>{{ toastMessage }}</span>
+      <button type="button" class="btn-close ms-auto" (click)="toastMessage = null"></button>
+    </div>
+
+    <!-- Top Page Header -->
+    <div class="lms-page-header">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <h1 class="page-title mb-0">Circular Notice Details</h1>
+          <span *ngIf="circular.circularNumber" class="ref-code-badge">{{ circular.circularNumber }}</span>
+        </div>
+        <p class="page-subtitle mb-0">View full faculty circular notice, target audience, and document attachment details</p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-secondary rounded-3 px-3 py-2 fw-semibold shadow-sm" (click)="backToList()">
+          <i class="bi bi-arrow-left me-1"></i> Back to List
+        </button>
+
+        <button
+          class="btn btn-outline-secondary rounded-3 px-3 py-2 fw-semibold shadow-sm"
+          (click)="togglePublishStatus()"
+        >
+          <i class="bi" [ngClass]="circular.status === 'Published' ? 'bi-pause-circle-fill' : 'bi-play-circle-fill'"></i>
+          {{ circular.status === 'Published' ? 'Unpublish' : 'Publish Circular' }}
+        </button>
+
+        <button class="btn-amber-primary" (click)="editCircular()">
+          <i class="bi bi-pencil-square"></i> Edit Circular
+        </button>
+
+        <button class="btn btn-outline-danger rounded-3 px-3 py-2 fw-semibold shadow-sm text-danger" (click)="confirmDelete()">
+          <i class="bi bi-trash3-fill"></i> Delete
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="row g-4">
+
+      <!-- Left Main Column (8 cols) -->
+      <div class="col-12 col-lg-8">
+        
+        <!-- Main Circular Card -->
+        <div class="ref-content-card p-4 mb-4">
+          <!-- 1. Circular Title -->
+          <div class="d-flex align-items-start justify-content-between pb-3 border-bottom mb-4">
+            <div>
+              <span class="text-muted x-small fw-bold text-uppercase d-block mb-1">CIRCULAR TITLE</span>
+              <h3 class="fw-bold text-dark mb-0">{{ circular.title }}</h3>
+            </div>
+          </div>
+
+          <!-- 2. Badges & Meta Info Row -->
+          <div class="row g-3 p-3 bg-light rounded-3 border mb-4">
+            <div class="col-6 col-sm-3">
+              <span class="form-label-custom mb-1">STATUS</span>
+              <span class="status-pill status-published" *ngIf="circular.status === 'Published'">
+                <span class="status-dot"></span> Published
+              </span>
+              <span class="status-pill status-draft" *ngIf="circular.status !== 'Published'">
+                <span class="status-dot"></span> Draft
+              </span>
+            </div>
+
+            <div class="col-6 col-sm-3">
+              <span class="form-label-custom mb-1">PRIORITY</span>
+              <span class="badge bg-amber-soft text-amber px-2.5 py-1.5 rounded-2 small fw-bold">
+                {{ circular.priority }}
+              </span>
+            </div>
+
+            <div class="col-6 col-sm-3">
+              <span class="form-label-custom mb-1">PUBLISH DATE</span>
+              <div class="fw-bold text-success small"><i class="bi bi-calendar-check me-1"></i> {{ circular.publishDate }}</div>
+            </div>
+
+            <div class="col-6 col-sm-3">
+              <span class="form-label-custom mb-1">EXPIRY DATE</span>
+              <div class="fw-bold text-secondary small">{{ circular.expiryDate || 'No Expiry' }}</div>
+            </div>
+          </div>
+
+          <!-- 3. Complete Description / Content -->
+          <div class="circular-body mb-4">
+            <h6 class="form-label-custom mb-2">CIRCULAR CONTENT & INSTRUCTIONS</h6>
+            <div class="p-3.5 bg-white rounded-3 border text-secondary lh-lg mb-0 text-justify white-space-pre-line fs-6">
+              {{ circular.description }}
+            </div>
+          </div>
+
+          <!-- 4. Attached Documents Section -->
+          <div *ngIf="circular.attachments && circular.attachments.length > 0" class="border-top pt-4">
+            <h6 class="form-label-custom mb-3">ATTACHED DOCUMENTS ({{ circular.attachments.length }})</h6>
+
+            <div class="row g-3">
+              <div *ngFor="let att of circular.attachments" class="col-12 col-sm-6">
+                <div class="p-3 border rounded-3 bg-light d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-3 overflow-hidden">
+                    <i class="bi bi-file-earmark-pdf-fill fs-2 text-warning"></i>
+                    <div class="text-truncate">
+                      <div class="fw-bold text-dark small text-truncate" [title]="att.name">{{ att.name }}</div>
+                      <div class="text-muted x-small">{{ att.size }} • {{ att.type | uppercase }}</div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-secondary rounded-3 py-1.5 px-3 x-small fw-bold">Download</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Metadata Sidebar Column (4 cols) -->
+      <div class="col-12 col-lg-4">
+        <div class="ref-content-card p-4 mb-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+            <i class="bi bi-building text-warning me-2"></i> Academic Target Scope
+          </h5>
+
+          <div class="mb-3">
+            <label class="form-label-custom">TARGET AUDIENCE</label>
+            <span class="badge bg-light text-dark border px-2.5 py-1.5 small fw-bold">{{ circular.audience }}</span>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-custom">DEPARTMENT</label>
+            <div class="fw-bold text-dark fs-6">{{ circular.department }}</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-custom">COURSE / DEGREE</label>
+            <div class="fw-bold text-dark small">{{ circular.course }}</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-custom">SEMESTER & SECTION</label>
+            <div class="fw-bold text-dark small">{{ circular.semester }} <span *ngIf="circular.section">({{ circular.section }})</span></div>
+          </div>
+
+          <hr class="my-3" />
+
+          <div class="mb-3">
+            <label class="form-label-custom">CREATED ON</label>
+            <div class="fw-bold text-secondary small"><i class="bi bi-clock me-1"></i> {{ circular.createdAt }}</div>
+          </div>
+
+          <div class="mb-3" *ngIf="circular.updatedAt">
+            <label class="form-label-custom">LAST UPDATED</label>
+            <div class="fw-bold text-secondary small"><i class="bi bi-arrow-repeat me-1"></i> {{ circular.updatedAt }}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div *ngIf="selectedCircularToDelete" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+      <div class="modal-dialog-sm bg-white rounded-4 shadow-lg p-4 text-center position-relative">
+        <div class="delete-icon-circle mx-auto mb-3">
+          <i class="bi bi-exclamation-triangle-fill fs-2 text-danger"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-2">Delete Circular?</h5>
+        <p class="text-muted small mb-4">Are you sure you want to delete <strong>"{{ circular.title }}"</strong>?</p>
+        
+        <div class="d-flex justify-content-center gap-2">
+          <button type="button" class="btn btn-light px-4 border rounded-3 fw-semibold" (click)="cancelDelete()">Cancel</button>
+          <button type="button" class="btn btn-danger px-4 shadow-sm rounded-3 fw-bold" (click)="executeDelete()">Yes, Delete</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

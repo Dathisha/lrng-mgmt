@@ -1,0 +1,261 @@
+<div class="lms-page-wrapper">
+  <div class="container-fluid px-3 px-md-4 py-4 max-width-container">
+
+    <!-- Toast Notification -->
+    <div *ngIf="toastMessage" class="toast-notification fade show shadow-lg mb-4" role="alert">
+      <i class="bi me-2 fs-5" [ngClass]="toastType === 'danger' ? 'bi-exclamation-triangle-fill text-danger' : 'bi-check-circle-fill text-success'"></i>
+      <span>{{ toastMessage }}</span>
+      <button type="button" class="btn-close ms-auto" (click)="toastMessage = null"></button>
+    </div>
+
+    <!-- Top Header matching Reference Image -->
+    <div class="lms-page-header">
+      <div>
+        <h1 class="page-title">Faculty Circulars Master</h1>
+        <p class="page-subtitle">Create, manage and publish official circulars for students and faculty</p>
+      </div>
+      <div>
+        <button class="btn-amber-primary" (click)="createNew()">
+          <i class="bi bi-plus-lg fs-6"></i> Create Circular
+        </button>
+      </div>
+    </div>
+
+    <!-- 4 Reference Image Stat Cards Row -->
+    <div class="row g-3 mb-4">
+      <!-- Card 1: Total Circulars -->
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle yellow"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-megaphone-fill text-warning"></i> TOTAL CIRCULARS
+          </div>
+          <div class="ref-stat-value">{{ stats.totalCirculars }}</div>
+          <span class="ref-stat-badge yellow">
+            <i class="bi bi-broadcast me-1"></i> Active Notices
+          </span>
+        </div>
+      </div>
+
+      <!-- Card 2: Published -->
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle green"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-check-circle-fill text-success"></i> PUBLISHED NOTICES
+          </div>
+          <div class="ref-stat-value">{{ stats.published }}</div>
+          <span class="ref-stat-badge green">
+            <i class="bi bi-eye-fill me-1"></i> Live on Portal
+          </span>
+        </div>
+      </div>
+
+      <!-- Card 3: Drafts -->
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle purple"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-file-earmark-text-fill text-purple"></i> DRAFTS
+          </div>
+          <div class="ref-stat-value">{{ stats.drafts }}</div>
+          <span class="ref-stat-badge purple">
+            <i class="bi bi-clock me-1"></i> Pending Publish
+          </span>
+        </div>
+      </div>
+
+      <!-- Card 4: Urgent Notices -->
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle pink"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-exclamation-triangle-fill text-danger"></i> URGENT NOTICES
+          </div>
+          <div class="ref-stat-value">{{ stats.urgent }}</div>
+          <span class="ref-stat-badge yellow" style="background-color: #fee2e2; color: #dc2626;">
+            <i class="bi bi-lightning-charge-fill me-1"></i> High Priority Alerts
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Controls Card Container -->
+    <div class="card shadow-sm border-0 rounded-4 p-4 mb-4 filter-card">
+      <div class="row g-3 align-items-end">
+        <!-- Department -->
+        <div class="col-12 col-md-3">
+          <label class="form-label-custom">DEPARTMENT *</label>
+          <select class="form-select custom-select" [(ngModel)]="filterDepartment" (change)="applyFilters()">
+            <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+          </select>
+        </div>
+
+        <!-- Course -->
+        <div class="col-12 col-md-3">
+          <label class="form-label-custom">COURSE *</label>
+          <select class="form-select custom-select" [(ngModel)]="filterCourse" (change)="applyFilters()">
+            <option *ngFor="let course of courses" [value]="course">{{ course }}</option>
+          </select>
+        </div>
+
+        <!-- Semester -->
+        <div class="col-12 col-md-2">
+          <label class="form-label-custom">SEMESTER</label>
+          <select class="form-select custom-select" [(ngModel)]="filterSemester" (change)="applyFilters()">
+            <option *ngFor="let sem of semesters" [value]="sem">{{ sem }}</option>
+          </select>
+        </div>
+
+        <!-- Status -->
+        <div class="col-12 col-md-2">
+          <label class="form-label-custom">STATUS</label>
+          <select class="form-select custom-select" [(ngModel)]="filterStatus" (change)="applyFilters()">
+            <option *ngFor="let st of statuses" [value]="st">{{ st }}</option>
+          </select>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="col-12 col-md-2">
+          <button class="btn btn-outline-secondary w-100 py-2 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-1" (click)="clearFilters()">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset
+          </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="col-12 mt-3">
+          <label class="form-label-custom">SEARCH CIRCULARS</label>
+          <div class="ref-search-wrapper w-100">
+            <i class="bi bi-search ref-search-icon"></i>
+            <input type="text" class="form-control ref-search-input w-100" placeholder="Search title, reference number, or keywords..." [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Data Table Container matching Reference Image -->
+    <div class="ref-content-card">
+      <div class="ref-content-header">
+        <h5 class="ref-content-title">
+          <i class="bi bi-megaphone-fill text-warning"></i> Circular Records List
+        </h5>
+        <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill fw-semibold">
+          Showing {{ filteredCirculars.length }} of {{ circulars.length }} circulars
+        </span>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="filteredCirculars.length === 0" class="text-center py-5">
+        <div class="mb-3 text-muted">
+          <i class="bi bi-inbox fs-1 opacity-50"></i>
+        </div>
+        <p class="text-muted fw-bold mb-2">No circulars match your current selection</p>
+        <button class="btn-amber-primary" (click)="createNew()">Create Circular</button>
+      </div>
+
+      <!-- Data Table with Dark Navy Header -->
+      <div *ngIf="filteredCirculars.length > 0" class="table-responsive">
+        <table class="table ref-table align-middle">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 32%;">CIRCULAR TITLE</th>
+              <th scope="col">DEPARTMENT & COURSE</th>
+              <th scope="col">AUDIENCE</th>
+              <th scope="col">PUBLISH DATE</th>
+              <th scope="col">PRIORITY</th>
+              <th scope="col">STATUS</th>
+              <th scope="col" class="text-end">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filteredCirculars" class="cursor-pointer" (click)="viewDetails(item.id)">
+              <!-- Title -->
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="type-icon-box bg-amber-soft">
+                    <i class="bi bi-file-earmark-text-fill fs-5 text-warning"></i>
+                  </div>
+                  <div>
+                    <div class="fw-bold text-dark assignment-title-text">{{ item.title }}</div>
+                    <div class="d-flex align-items-center gap-2 mt-1">
+                      <span *ngIf="item.circularNumber" class="ref-code-badge">{{ item.circularNumber }}</span>
+                      <span *ngIf="item.attachments.length > 0" class="badge bg-light text-dark border px-2 py-0.5 rounded-2 x-small">
+                        📎 {{ item.attachments.length }} file(s)
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Dept & Course -->
+              <td>
+                <div class="fw-bold text-dark small">{{ item.department }}</div>
+                <div class="text-muted x-small">{{ item.course }} • {{ item.semester }}</div>
+              </td>
+
+              <!-- Audience -->
+              <td>
+                <span class="badge bg-light text-dark border px-2.5 py-1 small fw-semibold">{{ item.audience }}</span>
+              </td>
+
+              <!-- Date -->
+              <td>
+                <div class="small text-dark fw-semibold"><i class="bi bi-calendar-event me-1 text-warning"></i> {{ item.publishDate }}</div>
+              </td>
+
+              <!-- Priority Badge -->
+              <td>
+                <span class="badge-pill" [ngClass]="getPriorityBadgeClass(item.priority)">
+                  {{ item.priority }}
+                </span>
+              </td>
+
+              <!-- Status -->
+              <td>
+                <span class="status-pill" [ngClass]="item.status === 'Published' ? 'status-published' : 'status-draft'">
+                  <span class="status-dot"></span> {{ item.status }}
+                </span>
+              </td>
+
+              <!-- Actions matching Reference Image Soft Buttons -->
+              <td class="text-end" (click)="$event.stopPropagation()">
+                <div class="d-inline-flex gap-1">
+                  <button type="button" class="btn-pill-view" title="View Details" (click)="viewDetails(item.id)">
+                    <i class="bi bi-eye-fill"></i> View
+                  </button>
+                  <button type="button" class="btn-pill-edit" title="Edit" (click)="editCircular(item.id, $event)">
+                    <i class="bi bi-pencil-square"></i> Edit
+                  </button>
+                  <button type="button" class="btn-pill-publish" [title]="item.status === 'Published' ? 'Unpublish' : 'Publish'" (click)="togglePublish(item, $event)">
+                    <i class="bi" [ngClass]="item.status === 'Published' ? 'bi-pause-circle-fill' : 'bi-play-circle-fill'"></i>
+                    {{ item.status === 'Published' ? 'Draft' : 'Publish' }}
+                  </button>
+                  <button type="button" class="btn-pill-delete" title="Delete" (click)="confirmDelete(item, $event)">
+                    <i class="bi bi-trash3-fill"></i> Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div *ngIf="selectedCircularToDelete" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+      <div class="modal-dialog-sm bg-white rounded-4 shadow-lg p-4 text-center position-relative">
+        <div class="delete-icon-circle mx-auto mb-3">
+          <i class="bi bi-exclamation-triangle-fill fs-2 text-danger"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-2">Delete Circular?</h5>
+        <p class="text-muted small mb-2">Are you sure you want to delete <strong>"{{ selectedCircularToDelete.title }}"</strong>?</p>
+        <p class="text-danger x-small mb-4">Ref: {{ selectedCircularToDelete.circularNumber || 'N/A' }} • This action cannot be undone.</p>
+        
+        <div class="d-flex justify-content-center gap-2">
+          <button type="button" class="btn btn-light px-4 border rounded-3 fw-semibold" (click)="cancelDelete()">Cancel</button>
+          <button type="button" class="btn btn-danger px-4 shadow-sm rounded-3 fw-bold" (click)="executeDelete()">Yes, Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

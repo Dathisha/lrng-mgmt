@@ -1,0 +1,204 @@
+<div class="lms-page-wrapper">
+  <div class="container-fluid px-3 px-md-4 py-4 max-width-container">
+    
+    <!-- Top Header -->
+    <div class="lms-page-header">
+      <div>
+        <h1 class="page-title">{{ pageTitle }}</h1>
+        <p class="page-subtitle">Fill in circular details, attach official files, and choose to publish or save as draft</p>
+      </div>
+      <div>
+        <button type="button" class="btn btn-outline-secondary rounded-3 px-3 py-2 fw-semibold d-flex align-items-center gap-1 shadow-sm" (click)="cancel()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <form [formGroup]="circularForm" class="row g-4">
+      <!-- Main Details Column -->
+      <div class="col-12 col-lg-8">
+        <!-- General Information -->
+        <div class="ref-content-card p-4 mb-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+            <i class="bi bi-info-circle-fill text-warning me-2"></i> General Information
+          </h5>
+
+          <div class="row g-3">
+            <!-- Circular Title -->
+            <div class="col-12 col-md-8">
+              <label class="form-label-custom">CIRCULAR TITLE *</label>
+              <input
+                type="text"
+                class="form-control custom-input"
+                [ngClass]="{ 'is-invalid': submitted && f['title'].errors }"
+                placeholder="e.g. Mandatory Mid-Semester Project Progress Reports"
+                formControlName="title"
+              />
+              <div *ngIf="submitted && f['title'].errors" class="invalid-feedback">
+                <span *ngIf="f['title'].errors['required']">Circular title is required.</span>
+                <span *ngIf="f['title'].errors['minlength']">Title must be at least 5 characters long.</span>
+              </div>
+            </div>
+
+            <!-- Circular Number (Optional) -->
+            <div class="col-12 col-md-4">
+              <label class="form-label-custom">CIRCULAR NUMBER <span class="text-muted small">(Optional)</span></label>
+              <input
+                type="text"
+                class="form-control custom-input"
+                placeholder="e.g. CIR-2026-CS-001"
+                formControlName="circularNumber"
+              />
+            </div>
+
+            <!-- Description -->
+            <div class="col-12">
+              <label class="form-label-custom">CIRCULAR DESCRIPTION / CONTENT *</label>
+              <textarea
+                class="form-control custom-input"
+                rows="5"
+                [ngClass]="{ 'is-invalid': submitted && f['description'].errors }"
+                placeholder="Write complete circular details, instructions, procedures, deadlines..."
+                formControlName="description"
+              ></textarea>
+              <div *ngIf="submitted && f['description'].errors" class="invalid-feedback">
+                <span *ngIf="f['description'].errors['required']">Circular description is required.</span>
+                <span *ngIf="f['description'].errors['minlength']">Description must be at least 10 characters long.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Academic Scope & Target -->
+        <div class="ref-content-card p-4 mb-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+            <i class="bi bi-building text-warning me-2"></i> Academic Scope & Target
+          </h5>
+
+          <div class="row g-3">
+            <!-- Department -->
+            <div class="col-12 col-md-6">
+              <label class="form-label-custom">DEPARTMENT *</label>
+              <select class="form-select custom-select" formControlName="department">
+                <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+              </select>
+            </div>
+
+            <!-- Course -->
+            <div class="col-12 col-md-6">
+              <label class="form-label-custom">COURSE / DEGREE *</label>
+              <select class="form-select custom-select" formControlName="course">
+                <option *ngFor="let crs of courses" [value]="crs">{{ crs }}</option>
+              </select>
+            </div>
+
+            <!-- Semester -->
+            <div class="col-12 col-md-6">
+              <label class="form-label-custom">SEMESTER *</label>
+              <select class="form-select custom-select" formControlName="semester">
+                <option *ngFor="let sem of semesters" [value]="sem">{{ sem }}</option>
+              </select>
+            </div>
+
+            <!-- Section -->
+            <div class="col-12 col-md-6">
+              <label class="form-label-custom">SECTION <span class="text-muted small">(Optional)</span></label>
+              <input type="text" class="form-control custom-input" placeholder="e.g. Section A & B" formControlName="section" />
+            </div>
+
+            <!-- Target Audience Scope -->
+            <div class="col-12">
+              <label class="form-label-custom">TARGET AUDIENCE SCOPE *</label>
+              <div class="d-flex flex-wrap gap-3">
+                <div *ngFor="let aud of audiences" class="form-check custom-radio-box border rounded-3 p-3 flex-fill bg-light">
+                  <input
+                    class="form-check-input ms-0 me-2"
+                    type="radio"
+                    [id]="'aud_' + aud"
+                    [value]="aud"
+                    formControlName="audience"
+                  />
+                  <label class="form-check-label fw-bold text-dark cursor-pointer" [for]="'aud_' + aud">
+                    {{ aud }}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attachment Upload Dropzone -->
+        <div class="ref-content-card p-4 mb-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+            <i class="bi bi-paperclip text-warning me-2"></i> Document Attachments
+          </h5>
+
+          <div class="upload-dropzone border border-2 border-dashed rounded-4 p-4 text-center bg-light mb-3">
+            <input type="file" id="fileUpload" class="d-none" multiple (change)="onFileSelected($event)" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
+            <label for="fileUpload" class="cursor-pointer mb-0 w-100">
+              <i class="bi bi-cloud-arrow-up-fill fs-1 text-warning mb-2 d-block"></i>
+              <div class="fw-bold text-dark">Click to browse or drop document attachments here</div>
+              <div class="text-muted small">Supports PDF, DOCX, PNG, JPG</div>
+            </label>
+          </div>
+
+          <div *ngIf="attachments.length > 0" class="list-group list-group-flush rounded-3 border">
+            <div *ngFor="let item of attachments; let i = index" class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-amber-soft text-amber px-2 py-1 small fw-bold text-uppercase">{{ item.type }}</span>
+                <span class="fw-semibold text-dark small">{{ item.name }}</span>
+                <span class="text-muted x-small">({{ item.size }})</span>
+              </div>
+              <button type="button" class="btn btn-sm btn-link text-danger p-0 fw-bold" (click)="removeAttachment(i)">
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Settings Column -->
+      <div class="col-12 col-lg-4">
+        <div class="ref-content-card p-4 mb-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+            <i class="bi bi-sliders text-warning me-2"></i> Publish Settings
+          </h5>
+
+          <!-- Publish Date -->
+          <div class="mb-4">
+            <label class="form-label-custom">PUBLISH DATE *</label>
+            <input
+              type="date"
+              class="form-control custom-input"
+              [ngClass]="{ 'is-invalid': submitted && f['publishDate'].errors }"
+              formControlName="publishDate"
+            />
+          </div>
+
+          <!-- Actions -->
+          <div class="d-grid gap-2 pt-2 border-top">
+            <button
+              type="button"
+              class="btn-amber-primary w-100 justify-content-center py-2.5"
+              (click)="saveCircular('Published')"
+            >
+              <i class="bi bi-send-fill"></i> {{ isEditMode ? 'Update & Publish' : 'Publish Circular' }}
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary py-2.5 fw-bold rounded-3"
+              (click)="saveCircular('Draft')"
+            >
+              <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Save as Draft
+            </button>
+
+            <button type="button" class="btn btn-light py-2 text-muted fw-semibold" (click)="cancel()">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

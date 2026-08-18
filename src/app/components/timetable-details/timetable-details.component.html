@@ -1,0 +1,115 @@
+<div *ngIf="timetable" class="lms-page-wrapper">
+  <div class="container-fluid px-3 px-md-4 py-4 max-width-container">
+
+    <!-- Header -->
+    <div class="lms-page-header">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <h1 class="page-title mb-0">{{ timetable.subject }}</h1>
+          <span class="ref-code-badge">{{ timetable.subjectCode }}</span>
+        </div>
+        <p class="page-subtitle mb-0">Detailed view of scheduled lecture session and classroom allocation</p>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-secondary rounded-3 px-3 py-2 fw-semibold shadow-sm" (click)="backToList()">
+          <i class="bi bi-arrow-left me-1"></i> Back to List
+        </button>
+
+        <button class="btn-amber-primary" (click)="editTimetable()">
+          <i class="bi bi-pencil-square"></i> Edit Entry
+        </button>
+
+        <button class="btn btn-outline-danger rounded-3 px-3 py-2 fw-semibold shadow-sm text-danger" (click)="confirmDelete()">
+          <i class="bi bi-trash3-fill"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Main Information -->
+      <div class="col-12 col-lg-8">
+        <div class="ref-content-card p-4 mb-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">Lecture Schedule Overview</h5>
+
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-md-4">
+              <label class="form-label-custom">DAY OF WEEK</label>
+              <div class="fw-bold text-dark fs-6">🗓️ {{ timetable.day }}</div>
+            </div>
+
+            <div class="col-6 col-md-4">
+              <label class="form-label-custom">TIME SLOT</label>
+              <div class="fw-bold text-dark fs-6">⏰ {{ timetable.startTime }} - {{ timetable.endTime }}</div>
+            </div>
+
+            <div class="col-6 col-md-4">
+              <label class="form-label-custom">PERIOD NUMBER</label>
+              <span class="badge bg-amber-soft text-amber fs-7 px-3 py-1.5 fw-bold">Period {{ timetable.periodNumber }}</span>
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="mb-2">
+            <label class="form-label-custom">FACULTY IN-CHARGE</label>
+            <div class="fw-bold text-dark fs-5">👤 {{ timetable.faculty }}</div>
+            <div class="text-muted small">{{ timetable.department }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scope Sidebar -->
+      <div class="col-12 col-lg-4">
+        <div class="ref-content-card p-4 mb-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">Academic Scope</h5>
+
+          <div class="mb-3">
+            <label class="form-label-custom">DEPARTMENT</label>
+            <div class="fw-bold text-dark fs-6">{{ timetable.department }}</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-custom">COURSE / DEGREE</label>
+            <div class="fw-bold text-dark small">{{ timetable.course }}</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-custom">YEAR & SEMESTER</label>
+            <div class="fw-bold text-dark small">{{ timetable.year }} • {{ timetable.semester }}</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-custom">SECTION</label>
+            <span *ngIf="timetable.section" class="badge bg-light text-dark border px-2.5 py-1 small fw-semibold">{{ timetable.section }}</span>
+            <span *ngIf="!timetable.section" class="text-muted small">All Sections / Not Specified</span>
+          </div>
+
+          <hr class="my-3" />
+
+          <div class="mb-3">
+            <label class="form-label-custom">ACADEMIC YEAR</label>
+            <div class="fw-bold text-success small"><i class="bi bi-calendar-check me-1"></i> {{ timetable.academicYear }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div *ngIf="selectedEntryToDelete" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+      <div class="modal-dialog-sm bg-white rounded-4 shadow-lg p-4 text-center position-relative">
+        <div class="delete-icon-circle mx-auto mb-3">
+          <i class="bi bi-exclamation-triangle-fill fs-2 text-danger"></i>
+        </div>
+        <h5 class="fw-bold text-dark mb-2">Delete Timetable Entry?</h5>
+        <p class="text-muted small mb-4">Are you sure you want to delete entry for <strong>"{{ timetable.subject }}"</strong>?</p>
+
+        <div class="d-flex justify-content-center gap-2">
+          <button type="button" class="btn btn-light px-4 border rounded-3 fw-semibold" (click)="cancelDelete()">Cancel</button>
+          <button type="button" class="btn btn-danger px-4 shadow-sm rounded-3 fw-bold" (click)="executeDelete()">Yes, Delete</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

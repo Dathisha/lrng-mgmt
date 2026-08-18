@@ -1,0 +1,396 @@
+<div class="lms-page-wrapper">
+  <div class="container-fluid px-3 px-md-4 py-4 max-width-container">
+
+    <!-- Toast Notification -->
+    <div *ngIf="toastMessage" class="toast-notification fade show shadow-lg mb-4" role="alert">
+      <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
+      <span>{{ toastMessage }}</span>
+      <button type="button" class="btn-close ms-auto" (click)="toastMessage = null"></button>
+    </div>
+
+    <!-- Top Header matching Reference Image -->
+    <div class="lms-page-header">
+      <div>
+        <h1 class="page-title">Faculty Timetable Schedule</h1>
+        <p class="page-subtitle">View, organize and manage weekly course lectures, classroom allocations, and faculty
+          periods</p>
+      </div>
+      <div>
+        <button class="btn-amber-primary" (click)="createNew()">
+          <i class="bi bi-plus-lg fs-6"></i> Add Timetable Entry
+        </button>
+      </div>
+    </div>
+
+    <!-- 4 Reference Image Stat Cards Row -->
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle yellow"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-calendar3 text-warning"></i> TOTAL CLASSES
+          </div>
+          <div class="ref-stat-value">{{ stats.totalClasses }}</div>
+          <span class="ref-stat-badge yellow">
+            <i class="bi bi-clock me-1"></i> Scheduled Lectures
+          </span>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle blue"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-calendar-check-fill text-primary"></i> ACTIVE DAYS
+          </div>
+          <div class="ref-stat-value">{{ stats.activeDays }} / 6</div>
+          <span class="ref-stat-badge blue">
+            <i class="bi bi-journal-week me-1"></i> Working Days
+          </span>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle pink"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-book-half text-danger"></i> SUBJECTS
+          </div>
+          <div class="ref-stat-value">{{ stats.uniqueSubjects }}</div>
+          <span class="ref-stat-badge yellow" style="background-color: #fce7f3; color: #be185d;">
+            <i class="bi bi-layers-fill me-1"></i> Course Subjects
+          </span>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="ref-stat-card">
+          <div class="ref-stat-circle green"></div>
+          <div class="ref-stat-label">
+            <i class="bi bi-book-half text-success"></i> TARGET COURSES
+          </div>
+          <div class="ref-stat-value">{{ stats.totalCourses }}</div>
+          <span class="ref-stat-badge green">
+            <i class="bi bi-building me-1"></i> Unique Courses
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Controls Card Container -->
+    <div class="card shadow-sm border-0 rounded-4 p-4 mb-4 filter-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+          <i class="bi bi-funnel-fill text-warning"></i> Filter Timetable Schedule
+        </h6>
+        <!-- View Toggle Switch -->
+        <div class="btn-group view-toggle-group" role="group">
+          <button type="button" class="btn btn-outline-secondary btn-sm fw-bold"
+            [class.active]="activeViewMode === 'grid'" (click)="setViewMode('grid')">
+            <i class="bi bi-grid-3x3-gap-fill me-1"></i> Weekly Grid
+          </button>
+          <button type="button" class="btn btn-outline-secondary btn-sm fw-bold"
+            [class.active]="activeViewMode === 'list'" (click)="setViewMode('list')">
+            <i class="bi bi-table me-1"></i> Table View
+          </button>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-end">
+        <!-- Department -->
+        <div class="col-12 col-sm-6 col-md-2">
+          <label class="form-label-custom">DEPARTMENT</label>
+          <select class="form-select custom-select" [(ngModel)]="filterDepartment" (change)="applyFilters()">
+            <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+          </select>
+        </div>
+
+        <!-- Course -->
+        <div class="col-12 col-sm-6 col-md-2">
+          <label class="form-label-custom">COURSE</label>
+          <select class="form-select custom-select" [(ngModel)]="filterCourse" (change)="applyFilters()">
+            <option *ngFor="let crs of courses" [value]="crs">{{ crs }}</option>
+          </select>
+        </div>
+
+        <!-- Year -->
+        <div class="col-12 col-sm-6 col-md-2">
+          <label class="form-label-custom">YEAR</label>
+          <select class="form-select custom-select" [(ngModel)]="filterYear" (change)="applyFilters()">
+            <option *ngFor="let yr of years" [value]="yr">{{ yr }}</option>
+          </select>
+        </div>
+
+        <!-- Semester -->
+        <div class="col-12 col-sm-6 col-md-2">
+          <label class="form-label-custom">SEMESTER</label>
+          <select class="form-select custom-select" [(ngModel)]="filterSemester" (change)="applyFilters()">
+            <option *ngFor="let sem of semesters" [value]="sem">{{ sem }}</option>
+          </select>
+        </div>
+
+        <!-- Section -->
+        <div class="col-12 col-sm-6 col-md-2">
+          <label class="form-label-custom">SECTION</label>
+          <select class="form-select custom-select" [(ngModel)]="filterSection" (change)="applyFilters()">
+            <option *ngFor="let sec of sections" [value]="sec">{{ sec }}</option>
+          </select>
+        </div>
+
+        <!-- Academic Year -->
+        <div class="col-12 col-sm-6 col-md-2">
+          <label class="form-label-custom">ACADEMIC YEAR</label>
+          <select class="form-select custom-select" [(ngModel)]="filterAcademicYear" (change)="applyFilters()">
+            <option *ngFor="let ay of academicYears" [value]="ay">{{ ay }}</option>
+          </select>
+        </div>
+
+        <!-- Search Bar & Reset -->
+        <div class="col-12 col-md-9 mt-3">
+          <label class="form-label-custom">SEARCH TIMETABLE</label>
+          <div class="ref-search-wrapper w-100">
+            <i class="bi bi-search ref-search-icon"></i>
+            <input type="text" class="form-control ref-search-input w-100"
+              placeholder="Search by subject, code, faculty, or room number..." [(ngModel)]="searchQuery"
+              (ngModelChange)="applyFilters()" />
+          </div>
+        </div>
+
+        <div class="col-12 col-md-3 mt-3">
+          <button
+            class="btn btn-outline-secondary w-100 py-2 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-1"
+            (click)="clearFilters()">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredTimetables.length === 0" class="ref-content-card text-center py-5">
+      <div class="mb-3 text-muted">
+        <i class="bi bi-calendar-x fs-1 opacity-50"></i>
+      </div>
+      <h6 class="text-dark fw-bold mb-1">No Timetable Entries Found</h6>
+      <p class="text-muted small mb-3">Try adjusting your filters or click below to add a new lecture period.</p>
+      <button class="btn-amber-primary" (click)="createNew()">+ Add Timetable Entry</button>
+    </div>
+
+    <!-- VIEW 1: WEEKLY GRID MATRIX -->
+    <div *ngIf="filteredTimetables.length > 0 && activeViewMode === 'grid'" class="ref-content-card mb-4">
+      <div class="ref-content-header">
+        <h5 class="ref-content-title">
+          <i class="bi bi-grid-3x3-gap-fill text-warning"></i> WEEKLY TIMETABLE MATRIX (MONDAY – SATURDAY)
+        </h5>
+        <span class="badge bg-light text-secondary border px-3 py-1.5 rounded-pill small fw-bold">8 Time Slots</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table ref-table timetable-grid-table align-middle">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 14%;">TIME / PERIOD</th>
+              <th *ngFor="let day of days" scope="col" class="text-center" style="width: 14.3%;">{{ day | uppercase }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let slot of timeSlots">
+              <!-- Time Slot Column -->
+              <td class="slot-time-col bg-white">
+                <div class="fw-bold text-dark small" *ngIf="!slot.isBreak">Period {{ slot.periodNumber }}</div>
+                <div class="fw-bold text-warning small" *ngIf="slot.isBreak && slot.breakType === 'BREAK'">☕ BREAK</div>
+                <div class="fw-bold text-success small" *ngIf="slot.isBreak && slot.breakType === 'LUNCH'">🍱 LUNCH
+                </div>
+                <div class="text-muted x-small">{{ slot.label }}</div>
+              </td>
+
+              <!-- Day Columns for Regular Class Periods -->
+              <ng-container *ngIf="!slot.isBreak">
+                <td *ngFor="let day of days" class="grid-cell p-2 bg-white">
+                  <ng-container *ngWith="getEntryForSlot(day, slot.periodNumber) as entry">
+                    <!-- Scheduled Class Cell Card -->
+                    <div *ngIf="entry" class="timetable-cell-card p-2.5 rounded-3 shadow-xs cursor-pointer border"
+                      [ngClass]="getSubjectCardClass(entry.colorTag)" (click)="viewDetails(entry)">
+                      <div class="d-flex justify-content-between align-items-start mb-1">
+                        <span class="ref-code-badge">{{ entry.subjectCode }}</span>
+                      </div>
+
+                      <div class="fw-bold subject-title text-truncate small" [title]="entry.subject">{{ entry.subject }}
+                      </div>
+                      <div class="x-small text-muted text-truncate mt-0.5">👤 {{ entry.faculty }}</div>
+                      <div
+                        class="d-flex align-items-center justify-content-between mt-2 pt-1 border-top border-secondary-subtle x-small">
+                        <span class="fw-bold text-dark">{{ entry.course }}<span *ngIf="entry.section"> • {{
+                            entry.section }}</span></span>
+                        <div class="action-btn-group" (click)="$event.stopPropagation()">
+                          <button class="btn-icon-xs text-primary" title="Edit" (click)="editEntry(entry.id, $event)"><i
+                              class="bi bi-pencil"></i></button>
+                          <button class="btn-icon-xs text-danger ms-1" title="Delete"
+                            (click)="confirmDelete(entry, $event)"><i class="bi bi-trash"></i></button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Free Period Cell -->
+                    <div *ngIf="!entry" class="free-period-cell text-center p-2 rounded-3">
+                      <span class="text-muted opacity-50 x-small">— Free Period —</span>
+                    </div>
+                  </ng-container>
+                </td>
+              </ng-container>
+
+              <!-- Spanned Break Cell across all days -->
+              <td *ngIf="slot.isBreak" [attr.colspan]="days.length"
+                class="text-center py-2.5 bg-light-subtle border-top border-bottom">
+                <span *ngIf="slot.breakType === 'BREAK'"
+                  class="badge bg-warning-subtle text-dark border border-warning-subtle px-3 py-1.5 rounded-pill small fw-bold">
+                  ☕ TEA / REFRESHMENT BREAK ({{ slot.label }})
+                </span>
+                <span *ngIf="slot.breakType === 'LUNCH'"
+                  class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill small fw-bold">
+                  🍱 LUNCH BREAK ({{ slot.label }})
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIEW 2: DATA TABLE / LIST VIEW -->
+    <div *ngIf="filteredTimetables.length > 0 && activeViewMode === 'list'" class="ref-content-card mb-4">
+      <div class="ref-content-header">
+        <h5 class="ref-content-title">
+          <i class="bi bi-list-columns-reverse text-warning"></i> Timetable Records List
+        </h5>
+        <span class="text-muted small fw-semibold">Showing {{ filteredTimetables.length }} scheduled slots</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table ref-table align-middle">
+          <thead>
+            <tr>
+              <th scope="col">DAY</th>
+              <th scope="col">TIME & PERIOD</th>
+              <th scope="col" style="width: 30%;">SUBJECT & CODE</th>
+              <th scope="col">CLASS / SECTION</th>
+              <th scope="col">FACULTY</th>
+              <th scope="col" class="text-end">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filteredTimetables" class="cursor-pointer" (click)="viewDetails(item)">
+              <td>
+                <span class="badge bg-amber-soft text-amber px-2.5 py-1 small fw-bold">{{ item.day }}</span>
+              </td>
+              <td>
+                <div class="fw-bold text-dark small">Period {{ item.periodNumber }}</div>
+                <div class="text-muted x-small"><i class="bi bi-clock me-1"></i> {{ item.startTime }} - {{ item.endTime
+                  }}</div>
+              </td>
+              <td>
+                <div class="fw-bold text-dark assignment-title-text">{{ item.subject }}</div>
+                <span class="ref-code-badge mt-1">{{ item.subjectCode }}</span>
+              </td>
+              <td>
+                <div class="fw-bold text-dark small">{{ item.course }}</div>
+                <div class="text-muted x-small">{{ item.semester }}<span *ngIf="item.section"> • {{ item.section
+                    }}</span></div>
+              </td>
+              <td>
+                <div class="small text-dark fw-bold">👤 {{ item.faculty }}</div>
+                <div class="text-muted x-small">{{ item.department }}</div>
+              </td>
+              <td class="text-end" (click)="$event.stopPropagation()">
+                <div class="d-inline-flex gap-1">
+                  <button type="button" class="btn-pill-view" title="View Details" (click)="viewDetails(item)">
+                    <i class="bi bi-eye-fill"></i> View
+                  </button>
+                  <button type="button" class="btn-pill-edit" title="Edit" (click)="editEntry(item.id, $event)">
+                    <i class="bi bi-pencil-square"></i> Edit
+                  </button>
+                  <button type="button" class="btn-pill-delete" title="Delete" (click)="confirmDelete(item, $event)">
+                    <i class="bi bi-trash3-fill"></i> Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIEW DETAILS MODAL -->
+    <div *ngIf="selectedEntryToView" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+      <div class="modal-dialog-custom bg-white rounded-4 shadow-lg p-4 position-relative">
+        <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-3">
+          <div>
+            <span class="ref-code-badge me-2">{{ selectedEntryToView.subjectCode }}</span>
+            <h5 class="fw-bold text-dark d-inline mb-0">{{ selectedEntryToView.subject }}</h5>
+          </div>
+          <button type="button" class="btn-close" (click)="closeViewModal()"></button>
+        </div>
+
+        <div class="row g-3 py-2">
+          <div class="col-6">
+            <label class="form-label-custom">DAY & TIME</label>
+            <div class="fw-bold text-dark small">🗓️ {{ selectedEntryToView.day }}</div>
+            <div class="text-muted x-small">⏰ {{ selectedEntryToView.startTime }} - {{ selectedEntryToView.endTime }}
+              (Period {{ selectedEntryToView.periodNumber }})</div>
+          </div>
+
+          <div class="col-6">
+            <label class="form-label-custom">FACULTY IN-CHARGE</label>
+            <div class="fw-bold text-dark small">👤 {{ selectedEntryToView.faculty }}</div>
+            <div class="text-muted x-small">{{ selectedEntryToView.department }}</div>
+          </div>
+
+          <div class="col-6">
+            <label class="form-label-custom">CLASS & SECTION</label>
+            <div class="fw-bold text-dark small">{{ selectedEntryToView.course }}</div>
+            <div class="text-muted x-small">{{ selectedEntryToView.semester }}<span *ngIf="selectedEntryToView.section">
+                • {{ selectedEntryToView.section }}</span></div>
+          </div>
+
+          <div class="col-12 pt-2 border-top">
+            <label class="form-label-custom">ACADEMIC YEAR & SCOPE</label>
+            <div class="fw-semibold text-secondary small">Academic Year: {{ selectedEntryToView.academicYear }} ({{
+              selectedEntryToView.year }})</div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 pt-3 border-top mt-3">
+          <button type="button" class="btn btn-secondary px-4 rounded-3" (click)="closeViewModal()">Close</button>
+          <button type="button" class="btn-amber-primary px-4"
+            (click)="editEntry(selectedEntryToView.id); closeViewModal()">Edit Entry</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DELETE CONFIRMATION MODAL -->
+    <div *ngIf="selectedEntryToDelete" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+      <div class="modal-dialog-sm bg-white rounded-4 shadow-lg p-4 text-center position-relative">
+        <div class="delete-icon-circle mx-auto mb-3">
+          <i class="bi bi-exclamation-triangle-fill fs-2 text-danger"></i>
+        </div>
+
+        <h5 class="fw-bold text-dark mb-2">Delete Timetable Entry?</h5>
+        <p class="text-muted small mb-2">Are you sure you want to delete entry for <strong>"{{
+            selectedEntryToDelete.subject }}"</strong>?</p>
+        <p class="text-danger x-small mb-4">
+          Day: {{ selectedEntryToDelete.day }} | Room: {{ selectedEntryToDelete.roomNumber }} • This action cannot be
+          undone.
+        </p>
+
+        <div class="d-flex justify-content-center gap-2">
+          <button type="button" class="btn btn-light px-4 border rounded-3 fw-semibold"
+            (click)="cancelDelete()">Cancel</button>
+          <button type="button" class="btn btn-danger px-4 shadow-sm rounded-3 fw-bold" (click)="executeDelete()">Yes,
+            Delete</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

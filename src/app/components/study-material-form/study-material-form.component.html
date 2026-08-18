@@ -1,0 +1,272 @@
+<div class="lms-page-wrapper">
+  <div class="container-fluid px-3 px-md-4 py-4 max-width-container">
+
+    <!-- Toast Notification -->
+    <div *ngIf="toastMessage" class="toast-notification fade show shadow-lg mb-4" role="alert">
+      <i class="bi me-2 fs-5" [ngClass]="toastType === 'success' ? 'bi-check-circle-fill text-success' : 'bi-exclamation-triangle-fill text-danger'"></i>
+      <span>{{ toastMessage }}</span>
+      <button type="button" class="btn-close ms-auto" (click)="toastMessage = null"></button>
+    </div>
+
+    <!-- Top Header -->
+    <div class="lms-page-header">
+      <div>
+        <h1 class="page-title">{{ pageTitle }}</h1>
+        <p class="page-subtitle">Fill in study material details, attach document files or add external learning links</p>
+      </div>
+      <div>
+        <button type="button" class="btn btn-outline-secondary rounded-3 px-3 py-2 fw-semibold d-flex align-items-center gap-1 shadow-sm" (click)="cancel()">
+          <i class="bi bi-arrow-left"></i> Back to Materials List
+        </button>
+      </div>
+    </div>
+
+    <form [formGroup]="materialForm" class="row g-4">
+      <!-- Main Content Column -->
+      <div class="col-12 col-lg-8">
+
+        <!-- Section 1: General Material Information -->
+        <div class="ref-content-card p-4 mb-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+            <i class="bi bi-journal-bookmark-fill text-warning me-2"></i> General Material Information
+          </h5>
+
+          <div class="row g-3">
+            <!-- Material Title -->
+            <div class="col-12">
+              <label class="form-label-custom">MATERIAL TITLE *</label>
+              <input
+                type="text"
+                class="form-control custom-input"
+                [ngClass]="{ 'is-invalid': submitted && f['title'].errors }"
+                placeholder="e.g. Complete Lecture Notes on Data Structures & Trees"
+                formControlName="title"
+              />
+              <div *ngIf="submitted && f['title'].errors" class="invalid-feedback">
+                <span *ngIf="f['title'].errors['required']">Material title is required.</span>
+                <span *ngIf="f['title'].errors['minlength']">Title must be at least 5 characters long.</span>
+              </div>
+            </div>
+
+            <!-- Material Description -->
+            <div class="col-12">
+              <label class="form-label-custom">DESCRIPTION & SUMMARY *</label>
+              <textarea
+                class="form-control custom-input"
+                rows="4"
+                [ngClass]="{ 'is-invalid': submitted && f['description'].errors }"
+                placeholder="Write summary, chapter overview, learning objectives..."
+                formControlName="description"
+              ></textarea>
+              <div *ngIf="submitted && f['description'].errors" class="invalid-feedback">
+                <span *ngIf="f['description'].errors['required']">Description is required.</span>
+                <span *ngIf="f['description'].errors['minlength']">Must be at least 10 characters long.</span>
+              </div>
+            </div>
+
+            <!-- Subject & Code -->
+            <div class="col-12 col-md-8">
+              <label class="form-label-custom">SUBJECT *</label>
+              <select class="form-select custom-select" formControlName="subject">
+                <option *ngFor="let sb of subjects" [value]="sb">{{ sb }}</option>
+              </select>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label-custom">SUBJECT CODE *</label>
+              <input
+                type="text"
+                class="form-control custom-input"
+                [ngClass]="{ 'is-invalid': submitted && f['subjectCode'].errors }"
+                placeholder="e.g. CS701"
+                formControlName="subjectCode"
+              />
+              <div *ngIf="submitted && f['subjectCode'].errors" class="invalid-feedback">
+                <span *ngIf="f['subjectCode'].errors['required']">Subject code is required.</span>
+              </div>
+            </div>
+
+            <!-- Topic / Chapter -->
+            <div class="col-12 col-md-7">
+              <label class="form-label-custom">TOPIC / CHAPTER *</label>
+              <input
+                type="text"
+                class="form-control custom-input"
+                [ngClass]="{ 'is-invalid': submitted && f['topic'].errors }"
+                placeholder="e.g. Chapter 3: Binary Search Trees & Graphs"
+                formControlName="topic"
+              />
+              <div *ngIf="submitted && f['topic'].errors" class="invalid-feedback">
+                <span *ngIf="f['topic'].errors['required']">Topic or chapter name is required.</span>
+              </div>
+            </div>
+
+            <!-- Material Type -->
+            <div class="col-12 col-md-5">
+              <label class="form-label-custom">MATERIAL TYPE *</label>
+              <select class="form-select custom-select" formControlName="materialType">
+                <option *ngFor="let type of materialTypes" [value]="type">{{ type }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: File Upload & External Links -->
+        <div class="ref-content-card p-4 mb-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+            <i class="bi bi-cloud-arrow-up-fill text-warning me-2"></i> File Upload & Resource Links
+          </h5>
+
+          <!-- File Upload Dropzone -->
+          <div class="mb-4">
+            <label class="form-label-custom">ATTACHED DOCUMENT / FILE</label>
+
+            <div class="upload-dropzone border border-2 border-dashed rounded-4 p-4 text-center bg-light mb-3 position-relative">
+              <input
+                type="file"
+                id="fileUpload"
+                class="d-none"
+                (change)="onFileSelected($event)"
+                accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.png,.jpg,.jpeg"
+              />
+              <label for="fileUpload" class="cursor-pointer mb-0 w-100">
+                <i class="bi bi-cloud-arrow-up-fill fs-1 text-warning mb-1 d-block"></i>
+                <div class="fw-bold text-dark">Click to browse or drag document file here</div>
+                <div class="text-muted small">Supports PDF, DOC, PPT, XLS, ZIP, PNG, JPG (Max 50MB)</div>
+              </label>
+            </div>
+
+            <!-- Uploaded File Card Details -->
+            <div *ngIf="uploadedFileName" class="p-3 border rounded-3 bg-white d-flex align-items-center justify-content-between shadow-xs">
+              <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-amber-soft text-amber text-uppercase px-2.5 py-1 small fw-bold">{{ uploadedFileType }}</span>
+                <div>
+                  <div class="fw-bold text-dark small">{{ uploadedFileName }}</div>
+                  <div class="text-muted x-small">{{ uploadedFileSize }}</div>
+                </div>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline-danger border-0 fw-bold" (click)="removeFile()">
+                <i class="bi bi-x-circle-fill me-1"></i> Remove
+              </button>
+            </div>
+          </div>
+
+          <!-- External Link -->
+          <div class="mb-2">
+            <label class="form-label-custom">EXTERNAL ONLINE RESOURCE / VIDEO LINK <span class="text-muted small">(Optional)</span></label>
+            <div class="ref-search-wrapper w-100">
+              <i class="bi bi-link-45deg ref-search-icon fs-5"></i>
+              <input
+                type="url"
+                class="form-control ref-search-input w-100 ps-5"
+                placeholder="https://youtube.com/watch?v=... or https://ieee.org/paper/..."
+                formControlName="externalLink"
+              />
+            </div>
+            <div class="text-muted x-small mt-1">Provide direct YouTube video tutorial URL, IEEE reference link, or cloud drive link.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Academic Scope & Publish Settings -->
+      <div class="col-12 col-lg-4">
+
+        <!-- Academic Target Scope -->
+        <div class="ref-content-card p-4 mb-4">
+          <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+            <i class="bi bi-building text-warning me-2"></i> Academic Target Scope
+          </h5>
+
+          <!-- Department -->
+          <div class="mb-3">
+            <label class="form-label-custom">DEPARTMENT *</label>
+            <select class="form-select custom-select" formControlName="department">
+              <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+            </select>
+          </div>
+
+          <!-- Course -->
+          <div class="mb-3">
+            <label class="form-label-custom">COURSE / DEGREE *</label>
+            <select class="form-select custom-select" formControlName="course">
+              <option *ngFor="let crs of courses" [value]="crs">{{ crs }}</option>
+            </select>
+          </div>
+
+          <!-- Year -->
+          <div class="mb-3">
+            <label class="form-label-custom">YEAR LEVEL *</label>
+            <select class="form-select custom-select" formControlName="year">
+              <option *ngFor="let yr of years" [value]="yr">{{ yr }}</option>
+            </select>
+          </div>
+
+          <!-- Semester -->
+          <div class="mb-3">
+            <label class="form-label-custom">SEMESTER *</label>
+            <select class="form-select custom-select" formControlName="semester">
+              <option *ngFor="let sem of semesters" [value]="sem">{{ sem }}</option>
+            </select>
+          </div>
+
+          <!-- Section -->
+          <div class="mb-3">
+            <label class="form-label-custom">SECTION <span class="text-muted x-small">(Optional)</span></label>
+            <select class="form-select custom-select" formControlName="section">
+              <option value="">Select Section (Optional)</option>
+              <option *ngFor="let sec of sections" [value]="sec">{{ sec }}</option>
+            </select>
+          </div>
+
+          <!-- Academic Year -->
+          <div class="mb-3">
+            <label class="form-label-custom">ACADEMIC SESSION *</label>
+            <select class="form-select custom-select" formControlName="academicYear">
+              <option *ngFor="let ay of academicYears" [value]="ay">{{ ay }}</option>
+            </select>
+          </div>
+
+          <!-- Publish Date -->
+          <div class="mb-4">
+            <label class="form-label-custom">PUBLISH DATE *</label>
+            <input type="date" class="form-control custom-input" formControlName="publishDate" />
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-grid gap-2 pt-2 border-top">
+            <button
+              type="button"
+              class="btn-amber-primary w-100 justify-content-center py-2.5"
+              (click)="saveMaterial('Published')"
+            >
+              <i class="bi bi-send-fill"></i> {{ isEditMode ? 'Update & Publish' : 'Upload & Publish' }}
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary py-2.5 fw-bold rounded-3"
+              (click)="saveMaterial('Draft')"
+            >
+              <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Save as Draft
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-light py-2 text-muted fw-semibold"
+              (click)="resetForm()"
+            >
+              Reset Form
+            </button>
+
+            <button type="button" class="btn btn-link text-muted py-1 x-small text-decoration-none fw-semibold" (click)="cancel()">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </form>
+
+  </div>
+</div>

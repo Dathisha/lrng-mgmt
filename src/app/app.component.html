@@ -1,0 +1,84 @@
+<div class="app-layout-wrapper" [class.sidebar-open-mobile]="isMobileSidebarOpen">
+  <!-- Mobile Header Navbar (Visible on Mobile < 768px) -->
+  <header class="mobile-header d-md-none">
+    <button class="mobile-hamburger-btn" (click)="toggleSidebar()" type="button" aria-label="Open Navigation">
+      <i class="bi bi-list"></i>
+    </button>
+    <div class="mobile-brand-wrapper">
+      <div class="brand-icon-box sm">
+        <i class="bi bi-mortarboard-fill"></i>
+      </div>
+      <span class="mobile-brand-title">CollegeOS</span>
+    </div>
+    <div class="mobile-header-right">
+      <span class="mobile-badge">Academic Portal</span>
+    </div>
+  </header>
+
+  <!-- Semi-transparent Dark Overlay Backdrop -->
+  <div 
+    class="sidebar-overlay" 
+    [class.active]="isMobileSidebarOpen" 
+    (click)="closeSidebar()" 
+    aria-hidden="true">
+  </div>
+
+  <!-- CollegeOS Dark Navy Sidebar -->
+  <aside class="lms-sidebar shadow-lg" [class.mobile-open]="isMobileSidebarOpen">
+    <div>
+      <div class="sidebar-brand">
+        <div class="brand-icon-box">
+          <i class="bi bi-mortarboard-fill"></i>
+        </div>
+        <div>
+          <div class="brand-title">CollegeOS</div>
+          <div class="brand-subtitle">Management System</div>
+        </div>
+        <!-- Close (×) icon for Mobile View -->
+        <button class="sidebar-close-btn d-md-none" (click)="closeSidebar()" type="button" aria-label="Close Sidebar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="sidebar-menu">
+        <div class="menu-section-header">CORE MODULES</div>
+        
+        <a routerLink="/assignments" routerLinkActive="active" class="sidebar-nav-item" (click)="closeSidebar()">
+          <i class="bi bi-journal-check"></i>
+          <span>Assignments</span>
+        </a>
+
+        <a routerLink="/circulars" routerLinkActive="active" class="sidebar-nav-item" (click)="closeSidebar()">
+          <i class="bi bi-megaphone-fill"></i>
+          <span>Circulars</span>
+        </a>
+
+        <a routerLink="/study-materials" routerLinkActive="active" class="sidebar-nav-item" (click)="closeSidebar()">
+          <i class="bi bi-folder-fill"></i>
+          <span>Study Materials</span>
+        </a>
+
+        <a routerLink="/timetables" routerLinkActive="active" class="sidebar-nav-item" (click)="closeSidebar()">
+          <i class="bi bi-calendar-week-fill"></i>
+          <span>Timetable</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Bottom User Footer -->
+    <div class="sidebar-user-footer">
+      <div class="user-info-box">
+        <div class="user-avatar-circle">F</div>
+        <div>
+          <div class="user-name">Faculty User</div>
+          <div class="user-role">Academic Instructor</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="app-main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
